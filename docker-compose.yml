@@ -1,0 +1,41 @@
+name: lib-control
+
+x-php: &php
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+    args:
+      UID: ${PHP_USER_UID:-1000}
+      GID: ${PHP_USER_GID:-1000}
+  image: lib-control-php
+  env_file: .env
+  volumes:
+    - ./api:/var/www/html
+    - ./docs/seed:/var/www/docs/seed:ro
+  depends_on:
+    postgres:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  api:
+    <<: *php
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-lib_control}
+      POSTGRES_USER: ${DB_USERNAME:-lib_control}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lib_control}
+      TZ: America/Bahia
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
