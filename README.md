@@ -22,18 +22,18 @@ O LibControl é um sistema de gestão de biblioteca com catálogo público, rese
 
 ## Arquitetura
 
-| Serviço              | Tecnologia                            | Acesso                        |
-|----------------------|---------------------------------------|-------------------------------|
-| `nginx`              | Nginx                                 | `http://localhost` (porta 80) |
-| `side`               | React + Bootstrap 5 + Bootstrap Icons | `/`                           |
-| `admin`              | React + Bootstrap 5 + Bootstrap Icons | `/admin/`                     |
-| `api`                | Laravel + PHP-FPM                     | `/api`                        |
-| `postgres`           | PostgreSQL 16                         | interno                       |
+| Serviço    | Tecnologia                               | Acesso                               |
+|-----------:|------------------------------------------|--------------------------------------|
+| `nginx`    | Nginx 1.27                               | `http://localhost:[PUBLIC_APP_PORT]` |
+| `site`     | React 19 + Bootstrap 5 + Bootstrap Icons | `/`                                  |
+| `admin`    | React 19 + Bootstrap 5 + Bootstrap Icons | `/admin/`                            |
+| `api`      | Laravel 13 + PHP-FPM 8.4                 | `/api`                               |
+| `postgres` | PostgreSQL 16                            | interno                              |
 
 ## Requisitos
 
 - Docker e Docker Compose
-- Node.js 22+ - _apenas para desenvolvimento dos fronts fora do container_.
+- Node.js 24+ - _apenas para desenvolvimento dos fronts fora do container_.
 
 ## Como rodar
 
@@ -46,12 +46,12 @@ docker compose exec api php artisan lib-control:criar-admin
 ```
 
 Acesse:
-- Catálogo: http://localhost:[PORTA]/
-- Administração: http://localhost:[PORTA]/admin/
+- Catálogo: http://localhost:[PUBLIC_APP_PORT]/
+- Administração: http://localhost:[PUBLIC_APP_PORT]/admin/
 
 ## Variáveis de ambiente
 
-| Variável  | Padrão             | Descrição          |
-|-----------|--------------------|--------------------|
-| `APP_URL` | `http://localhost` | URL pública        |
-| `DB_*`    | —                  | conexão PostgreSQL |
+| Variável          | Padrão | Descrição                |
+|:------------------|:------:|-------------------------:|
+| `PUBLIC_APP_PORT` | `5000` | Porta pública do Nginx   |
+| `DB_*`            | —      | Conexão PostgreSQL       |
