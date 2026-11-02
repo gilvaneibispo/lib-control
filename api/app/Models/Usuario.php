@@ -9,9 +9,6 @@ use Illuminate\Notifications\Notifiable;
 
 class Usuario extends Authenticatable
 {
-
-    public const FOTO_PERFIL_PADRAO = '/profiles/foto-padrao.png';
-
     use HasFactory, Notifiable;
 
     protected $hidden = ['password'];

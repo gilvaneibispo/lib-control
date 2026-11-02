@@ -14,6 +14,7 @@ use App\Http\Requests\LoginRequest;
 use App\Exceptions\RegrasException;
 use App\Enums\CodigoErro;
 use App\Enums\Papel;
+use App\Enums\FakeTemp;
 
 class AuthController extends Controller
 {
@@ -21,7 +22,7 @@ class AuthController extends Controller
     {
         $user = DB::transaction(function () use ($request) {
             $user = Usuario::create($request->safe()->except(['foto', 'password_confirmation']));
-            $user->forceFill(['foto_path' => Usuario::FOTO_PERFIL_PADRAO])->save();
+            $user->forceFill(['foto_path' => FakeTemp::USUARIO_FOTO_PERFIL_PATH->value])->save();
 
             return $user;
         });
