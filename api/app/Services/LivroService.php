@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Exemplar;
 use App\Models\Livro;
 use App\Helpers\LivroHelper;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,8 @@ final class LivroService
             $livro = new Livro;
             $this->preencher($livro, $dados);
             $livro->save();
+
+            $this->adicionarExemplares($livro, (int) ($dados['quantidade_exemplares'] ?? 1));
 
             return $livro;
         });
@@ -38,6 +41,22 @@ final class LivroService
         $livro->delete();
     }
 
+    public function adicionarExemplares(Livro $livro, int $quantidade): array
+    {
+        $criados = [];
+        $seq = $this->ultimaSequencia($livro);
+
+        for ($i = 0; $i < $quantidade; $i++) {
+            do {
+                $codigo = $livro->id . '-' . (++$seq);
+            } while (Exemplar::query()->where('codigo', $codigo)->exists());
+
+            $criados[] = $livro->exemplares()->create(['codigo' => $codigo]);
+        }
+
+        return $criados;
+    }
+
     private function preencher(Livro $livro, array $dados): void
     {
         $livro->fill(collect($dados)->only([
@@ -53,5 +72,18 @@ final class LivroService
 
         $livro->area_id = $dados['area_id'] ?? $livro->area_id;
         $livro->subarea_id = $dados['subarea_id'] ?? null;
+    }
+
+    private function ultimaSequencia(Livro $livro): int
+    {
+        $expressao = '/^' . $livro->id . '-(\d+)$/';
+        $sequencias = fn(string $codigo) => preg_match($expressao, $codigo, $resultados)
+            ? (int) $resultados[1]
+            : 0;
+
+        return (int) $livro->exemplares()
+            ->pluck('codigo')
+            ->map($sequencias)
+            ->max();
     }
 }

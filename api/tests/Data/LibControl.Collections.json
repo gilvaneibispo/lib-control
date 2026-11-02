@@ -309,18 +309,124 @@
                     "name": "Exemplar",
                     "item": [
                         {
-                            "name": "Obter Exemplar [Adm]",
+                            "name": "Obter Exemplares do Livro [Adm]",
                             "request": {
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{apiUrl}}/admin/exemplares",
+                                    "raw": "{{apiUrl}}/admin/livros/{{livroTesteId}}/exemplares",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros",
+                                        "{{livroTesteId}}",
+                                        "exemplares"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Inserir Exemplares [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"quantidade\": 2\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros/{{livroTesteId}}/exemplares",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros",
+                                        "{{livroTesteId}}",
+                                        "exemplares"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Buscar Exemplares [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/exemplares?q=Dom Casmurro&disponivel=1",
                                     "host": [
                                         "{{apiUrl}}"
                                     ],
                                     "path": [
                                         "admin",
                                         "exemplares"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "Dom Casmurro"
+                                        },
+                                        {
+                                            "key": "disponivel",
+                                            "value": "1"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Atualizar Exemplar [Adm]",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"status\": \"indisponivel\",\r\n    \"observacao\": \"Capa danificada\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/exemplares/1",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "exemplares",
+                                        "1"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Deletar Exemplar [Adm]",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/exemplares/2",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "exemplares",
+                                        "2"
                                     ]
                                 }
                             },

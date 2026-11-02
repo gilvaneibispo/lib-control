@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\StatusExemplar;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Exemplar extends Model
 {
@@ -18,5 +19,10 @@ class Exemplar extends Model
     protected function casts(): array
     {
         return ['status' => StatusExemplar::class];
+    }
+
+    public function livro(): BelongsTo
+    {
+        return $this->belongsTo(Livro::class)->withTrashed();
     }
 }

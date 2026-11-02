@@ -55,4 +55,29 @@ class Livro extends Model
     {
         return $this->belongsTo(Subarea::class);
     }
+
+    public function exemplares(): HasMany
+    {
+        return $this->hasMany(Exemplar::class)->orderBy('id');
+    }
+
+    public function scopeBusca(Builder $query, ?string $termo): void
+    {
+        $termo = trim((string) $termo);
+        if ($termo === '') {
+            return;
+        }
+
+        $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $termo) . '%';
+        $isbn = preg_replace('/[^0-9Xx]/', '', $termo);
+
+        $query->where(function (Builder $q) use ($like, $isbn) {
+            $q->where('titulo', 'ilike', $like)
+                ->orWhere('subtitulo', 'ilike', $like)
+                ->orWhereHas('autores', fn(Builder $a) => $a->where('nome', 'ilike', $like));
+            if ($isbn !== null && strlen($isbn) >= 4) {
+                $q->orWhere('isbn', 'like', '%' . $isbn . '%');
+            }
+        });
+    }
 }
