@@ -27,7 +27,7 @@ class LivroController extends Controller
         ]);
 
         $livros = Livro::query()
-            ->with(['autores'])
+            ->with(['autores', 'area', 'subarea'])
             ->latest('id')
             ->paginate($livrosPorPaginas)
             ->withQueryString();
@@ -40,17 +40,17 @@ class LivroController extends Controller
 
         $livro = $this->livros->criar($request->validated());
 
-        return (new LivroResource($livro))->response()->setStatusCode(201);
+        return (new LivroResource($livro->load(['area', 'subarea'])))->response()->setStatusCode(201);
     }
 
     public function show(Livro $livro): JsonResponse
     {
-        return (new LivroResource($livro))->response();
+        return (new LivroResource($livro->load(['area', 'subarea'])))->response();
     }
 
     public function update(LivroRequest $request, Livro $livro): LivroResource
     {
-        return new LivroResource($this->livros->atualizar($livro, $request->validated()));
+        return new LivroResource($this->livros->atualizar($livro, $request->validated())->load(['area', 'subarea']));
     }
 
     public function destroy(Livro $livro): JsonResponse

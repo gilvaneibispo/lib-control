@@ -14,7 +14,7 @@ class LivroController extends Controller
     public function index(): Anonimos
     {
         $livros = Livro::query()
-            ->with('autores')
+            ->with(['autores', 'area', 'subarea'])
             ->orderBy('titulo')
             ->orderBy('id')
             ->paginate(config('lib-control.por_pagina'))
@@ -25,6 +25,6 @@ class LivroController extends Controller
 
     public function show(Livro $livro): LivroResource
     {
-        return new LivroResource($livro->load('autores'));
+        return new LivroResource($livro->load(['autores', 'area', 'subarea']));
     }
 }

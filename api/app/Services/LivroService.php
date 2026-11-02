@@ -50,5 +50,8 @@ final class LivroService
             'cdd',
             'cdu',
         ])->all());
+
+        $livro->area_id = $dados['area_id'] ?? $livro->area_id;
+        $livro->subarea_id = $dados['subarea_id'] ?? null;
     }
 }

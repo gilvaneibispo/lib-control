@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Site\AreaController;
 use App\Http\Controllers\Site\LivroController;
 
 // Autenticação
@@ -16,3 +17,5 @@ Route::prefix('livros')->group(function () {
     Route::get('/', [LivroController::class, 'index']);
     Route::get('/{livro}', [LivroController::class, 'show']);
 });
+
+Route::get('/areas', [AreaController::class, 'index']);

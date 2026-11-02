@@ -20,6 +20,15 @@ class LivroResource extends JsonResource
             'sinopse' => $this->sinopse,
             'cdd' => $this->cdd,
             'cdu' => $this->cdu,
+            'area' => $this->whenLoaded('area', fn() => $this->area ? [
+                'id' => $this->area->id,
+                'codigo' => $this->area->codigo,
+                'nome' => $this->area->nome,
+            ] : null),
+            'subarea' => $this->whenLoaded('subarea', fn() => $this->subarea ? [
+                'id' => $this->subarea->id,
+                'nome' => $this->subarea->nome,
+            ] : null),
             'capa_url' => $this->capaUrl(),
             'autores' => $this->whenLoaded('autores', fn() => $this->autores->pluck('nome')->all()),
             'criado_em' => $this->created_at?->toIso8601String(),

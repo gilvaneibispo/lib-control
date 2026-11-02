@@ -1,0 +1,482 @@
+{
+    "info": {
+        "_postman_id": "15f03dcf-924e-4ee6-a14d-c75e747ad52d",
+        "name": "LibControl",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "2775196"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Registrar",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"nome\": \"Gilvanei Admin\",\r\n    \"email\": \"gilvanei.admin@email.com\",\r\n    \"password\": \"senha123\",\r\n    \"password_confirmation\": \"senha123\",\r\n    \"cpf\": \"178.392.700-34\",\r\n    \"data_nascimento\": \"1989-03-13\",\r\n    \"cep\": \"440.330-22\",\r\n    \"uf\": \"BA\",\r\n    \"cidade\": \"Feira de Santana\",\r\n    \"bairro\": \"Campo Limpo\",\r\n    \"rua\": \"Primavera\",\r\n    \"numero\": \"333\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{apiUrl}}/auth/registrar",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "registrar"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{apiUrl}}/auth/logout",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"email\": \"gilvanei.admin@email.com\",\r\n    \"password\": \"senha123\",\r\n    \"acesso\": \"admin\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{apiUrl}}/auth/login",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obter Usuário",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{apiUrl}}/auth/me",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "CSRF Cookie",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{publicUrl}}/sanctum/csrf-cookie",
+                            "host": [
+                                "{{publicUrl}}"
+                            ],
+                            "path": [
+                                "sanctum",
+                                "csrf-cookie"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Site",
+            "item": [
+                {
+                    "name": "Livros",
+                    "item": [
+                        {
+                            "name": "Obter Livro",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/livros/{{livroTesteId}}",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "livros",
+                                        "{{livroTesteId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Obter Livros - Todos",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/livros",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "livros"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Áreas",
+                    "item": [
+                        {
+                            "name": "Obter Áreas - Todas",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/areas",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "areas"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Livros",
+                    "item": [
+                        {
+                            "name": "Obter Livros - Todos [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Atualizar Livro [Adm]",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"titulo\": \"Dom Casmurro [ID 11]\",\r\n    \"cdu\": \"821.134.3(81)-34\",\r\n    \"area_id\": 5,\r\n    \"subarea_id\": 15\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros/11",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros",
+                                        "11"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Deletar Livro [Adm]",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros/10",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros",
+                                        "10"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Inserir Livro [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"titulo\": \"Dom Casmurro\",\r\n    \"subtitulo\": \"Memórias de Bentinho\",\r\n    \"isbn\": \"978-85-359-0276-8\",\r\n    \"ano\": 1899,\r\n    \"editora\": \"Editora Garnier\",\r\n    \"sinopse\": \"A obra narra a história de Bentinho e Capitu, explorando temas como ciúme, amor, memória e dúvida.\",\r\n    \"cdd\": \"869.3\",\r\n    \"cdu\": \"821.134.3(81)-31\",\r\n    \"area_id\": 5,\r\n    \"subarea_id\": 15\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Obter Livro [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/livros/{{livroTesteId}}",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "livros",
+                                        "{{livroTesteId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Exemplar",
+                    "item": [
+                        {
+                            "name": "Obter Exemplar [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/exemplares",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "exemplares"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    "// Guarda XSRF-TOKEN e laravel-session de uma resposta nas variáveis da collection.",
+                    "const capturarCredenciais = (headers) => {",
+                    "    const alvos = {",
+                    "        'XSRF-TOKEN': 'xsrfToken',",
+                    "        'laravel-session': 'laravelSession',",
+                    "    };",
+                    "",
+                    "    headers.all()",
+                    "        .filter(h => h.key.toLowerCase() === 'set-cookie')",
+                    "        .forEach(h => {",
+                    "            const [par] = h.value.split(';');",
+                    "            const idx = par.indexOf('=');",
+                    "            const nome = par.slice(0, idx).trim();",
+                    "            const valor = par.slice(idx + 1).trim();",
+                    "",
+                    "            if (!alvos[nome]) return;",
+                    "",
+                    "            // O header X-XSRF-TOKEN precisa do valor decodificado (o cookie vem URL-encoded)",
+                    "            const final = nome === 'XSRF-TOKEN' ? decodeURIComponent(valor) : valor;",
+                    "            pm.collectionVariables.set(alvos[nome], final);",
+                    "            console.log(`[auth] ${alvos[nome]} atualizado`);",
+                    "        });",
+                    "};",
+                    "",
+                    "// Injeta os headers que o Sanctum precisa para tratar a requisição como stateful.",
+                    "const aplicarCredenciais = () => {",
+                    "    const xsrfToken = pm.collectionVariables.get('xsrfToken');",
+                    "    const laravelSession = pm.collectionVariables.get('laravelSession');",
+                    "",
+                    "    if (xsrfToken) {",
+                    "        pm.request.headers.upsert({ key: 'X-XSRF-TOKEN', value: xsrfToken });",
+                    "    }",
+                    "",
+                    "    if (laravelSession) {",
+                    "        pm.request.headers.upsert({ key: 'Cookie', value: `laravel-session=${laravelSession}` });",
+                    "    }",
+                    "};",
+                    "",
+                    "const url = pm.variables.replaceIn(pm.request.url.toString());",
+                    "const origem = (url.match(/^https?:\\/\\/[^\\/]+/) || [])[0];",
+                    "",
+                    "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });",
+                    "",
+                    "if (origem) {",
+                    "    pm.request.headers.upsert({ key: 'Origin', value: origem });",
+                    "}",
+                    "",
+                    "// Sem credenciais (primeiro uso, após 419 ou expiração): busca o cookie CSRF antes de seguir",
+                    "const precisaCsrf = !pm.collectionVariables.get('xsrfToken')",
+                    "    && origem",
+                    "    && !url.includes('/sanctum/csrf-cookie');",
+                    "",
+                    "if (precisaCsrf) {",
+                    "    pm.sendRequest({",
+                    "        url: `${origem}/sanctum/csrf-cookie`,",
+                    "        method: 'GET',",
+                    "        header: { Origin: origem, Accept: 'application/json' },",
+                    "    }, (erro, resposta) => {",
+                    "        if (erro) {",
+                    "            console.error('[auth] falha ao obter o cookie CSRF', erro);",
+                    "            return;",
+                    "        }",
+                    "",
+                    "        capturarCredenciais(resposta.headers);",
+                    "        aplicarCredenciais();",
+                    "    });",
+                    "} else {",
+                    "    aplicarCredenciais();",
+                    "}"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    "// Guarda XSRF-TOKEN e laravel-session de uma resposta nas variáveis da collection.",
+                    "const capturarCredenciais = (headers) => {",
+                    "    const alvos = {",
+                    "        'XSRF-TOKEN': 'xsrfToken',",
+                    "        'laravel-session': 'laravelSession',",
+                    "    };",
+                    "",
+                    "    headers.all()",
+                    "        .filter(h => h.key.toLowerCase() === 'set-cookie')",
+                    "        .forEach(h => {",
+                    "            const [par] = h.value.split(';');",
+                    "            const idx = par.indexOf('=');",
+                    "            const nome = par.slice(0, idx).trim();",
+                    "            const valor = par.slice(idx + 1).trim();",
+                    "",
+                    "            if (!alvos[nome]) return;",
+                    "",
+                    "            // O header X-XSRF-TOKEN precisa do valor decodificado (o cookie vem URL-encoded)",
+                    "            const final = nome === 'XSRF-TOKEN' ? decodeURIComponent(valor) : valor;",
+                    "            pm.collectionVariables.set(alvos[nome], final);",
+                    "            console.log(`[auth] ${alvos[nome]} atualizado`);",
+                    "        });",
+                    "};",
+                    "",
+                    "// Captura as credenciais de toda resposta (login, registro e logout regeneram a sessão)",
+                    "capturarCredenciais(pm.response.headers);",
+                    "",
+                    "// 419: token CSRF não bate com a sessão. Limpa tudo para a próxima requisição renovar.",
+                    "if (pm.response.code === 419) {",
+                    "    pm.collectionVariables.set('xsrfToken', '');",
+                    "    pm.collectionVariables.set('laravelSession', '');",
+                    "    console.warn('[auth] token CSRF inválido; será renovado na próxima requisição');",
+                    "}",
+                    "",
+                    "if (pm.response.code === 401) {",
+                    "    console.warn('[auth] sessão não autenticada; execute Auth > Login');",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "apiUrl",
+            "value": ""
+        },
+        {
+            "key": "xsrfToken",
+            "value": ""
+        },
+        {
+            "key": "laravelSession",
+            "value": ""
+        },
+        {
+            "key": "publicUrl",
+            "value": ""
+        },
+        {
+            "key": "livroTesteId",
+            "value": ""
+        }
+    ]
+}

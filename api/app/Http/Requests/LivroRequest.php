@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subarea;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class LivroRequest extends FormRequest
 {
@@ -46,6 +48,8 @@ class LivroRequest extends FormRequest
             'sinopse' => ['nullable', 'string', 'max:10000'],
             'cdd' => ['nullable', 'string', 'max:40'],
             'cdu' => ['nullable', 'string', 'max:80'],
+            'area_id' => ['nullable', 'integer', 'exists:areas,id'],
+            'subarea_id' => ['nullable', 'integer', 'exists:subareas,id'],
             'autores' => ['array', 'max:20'],
             'autores.*' => ['string', 'max:150'],
             'quantidade_exemplares' => [
@@ -54,6 +58,22 @@ class LivroRequest extends FormRequest
                 'min:1',
                 'max:' . $qtdMax,
             ],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                $area = $this->input('area_id');
+                $subarea = $this->input('subarea_id');
+                if ($subarea) {
+                    $pertence = Subarea::query()->whereKey($subarea)->where('area_id', $area)->exists();
+                    if (!$pertence) {
+                        $validator->errors()->add('subarea_id', 'A sub-área não pertence à área informada.');
+                    }
+                }
+            },
         ];
     }
 
