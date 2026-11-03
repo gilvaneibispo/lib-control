@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\CodigoErro;
+use App\Exceptions\RegrasException;
 use App\Models\Exemplar;
 use App\Models\Livro;
 use App\Helpers\LivroHelper;
@@ -38,6 +40,14 @@ final class LivroService
 
     public function excluir(Livro $livro): void
     {
+        $emUso = $livro->exemplares()->whereIn('status', ['reservado', 'emprestado'])->exists();
+        if ($emUso) {
+            throw new RegrasException(
+                CodigoErro::ExemplarEmUso,
+                'O livro tem exemplares reservados ou emprestados.'
+            );
+        }
+
         $livro->delete();
     }
 
@@ -47,14 +57,21 @@ final class LivroService
         $seq = $this->ultimaSequencia($livro);
 
         for ($i = 0; $i < $quantidade; $i++) {
-            do {
-                $codigo = $livro->id . '-' . (++$seq);
-            } while (Exemplar::query()->where('codigo', $codigo)->exists());
-
-            $criados[] = $livro->exemplares()->create(['codigo' => $codigo]);
+            $criados[] = $this->criarExemplar($livro, $seq);
         }
 
         return $criados;
+    }
+
+    private function criarExemplar(Livro $livro, int &$seq): Exemplar
+    {
+        $codigoEmUso = false;
+        do {
+            $codigo = $livro->id . '-' . (++$seq);
+            $codigoEmUso = Exemplar::query()->where('codigo', $codigo)->exists();
+        } while ($codigoEmUso);
+
+        return $livro->exemplares()->create(['codigo' => $codigo]);
     }
 
     private function preencher(Livro $livro, array $dados): void

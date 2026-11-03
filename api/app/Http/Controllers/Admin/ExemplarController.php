@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection as Anonimos;
+use Illuminate\Support\Facades\DB;
 
+use App\Enums\CodigoErro;
 use App\Enums\StatusExemplar;
+use App\Exceptions\RegrasException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExemplarRequest;
 use App\Http\Resources\ExemplarResource;
+use App\Models\Emprestimo;
 use App\Models\Exemplar;
 use App\Models\Livro;
+use App\Models\Reserva;
 use App\Services\LivroService;
 
 class ExemplarController extends Controller
@@ -59,15 +64,32 @@ class ExemplarController extends Controller
 
     public function update(ExemplarRequest $request, Exemplar $exemplar): ExemplarResource
     {
-        $exemplar->update($request->validated());
+        return DB::transaction(function () use ($request, $exemplar) {
+            $exemplar = Exemplar::query()->whereKey($exemplar->id)->lockForUpdate()->firstOrFail();
+            if ($exemplar->status->emUso()) {
+                throw new RegrasException(CodigoErro::ExemplarEmUso);
+            }
+            $exemplar->update($request->validated());
 
-        return new ExemplarResource($exemplar);
+            return new ExemplarResource($exemplar);
+        });
     }
 
     public function destroy(Exemplar $exemplar): JsonResponse
     {
-        $exemplar->delete();
+        return DB::transaction(function () use ($exemplar) {
+            $exemplar = Exemplar::query()->whereKey($exemplar->id)->lockForUpdate()->firstOrFail();
+            if ($exemplar->status->emUso()) {
+                throw new RegrasException(CodigoErro::ExemplarEmUso);
+            }
+            $temHistorico = Reserva::query()->where('exemplar_id', $exemplar->id)->exists()
+                || Emprestimo::query()->where('exemplar_id', $exemplar->id)->exists();
+            if ($temHistorico) {
+                throw new RegrasException(CodigoErro::ExemplarComHistorico);
+            }
+            $exemplar->delete();
 
-        return response()->json(null, 204);
+            return response()->json(null, 204);
+        });
     }
 }

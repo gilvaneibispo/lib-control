@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Leitor\MeController;
+use App\Http\Controllers\Leitor\ReservaController;
 use App\Http\Controllers\Site\AreaController;
 use App\Http\Controllers\Site\LivroController;
 
@@ -18,4 +20,14 @@ Route::prefix('livros')->group(function () {
     Route::get('/{livro}', [LivroController::class, 'show']);
 });
 
+// Áreas
 Route::get('/areas', [AreaController::class, 'index']);
+
+// Reservas e empréstimos
+Route::middleware(['auth:sanctum', 'papel:leitor'])->group(function () {
+    Route::get('/me/reservas', [MeController::class, 'reservas']);
+    Route::get('/me/emprestimos', [MeController::class, 'emprestimos']);
+
+    Route::post('/reservas', [ReservaController::class, 'store']);
+    Route::post('/reservas/{reserva}/cancelar', [ReservaController::class, 'cancelar']);
+});

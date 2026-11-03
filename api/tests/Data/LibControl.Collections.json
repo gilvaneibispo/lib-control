@@ -187,6 +187,92 @@
             ]
         },
         {
+            "name": "Leitor",
+            "item": [
+                {
+                    "name": "Obter Minhas Reservas",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{apiUrl}}/me/reservas",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "me",
+                                "reservas"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obter Meus Empréstimos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{apiUrl}}/me/emprestimos",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "me",
+                                "emprestimos"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reservar Livro",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"livro_id\": {{livroTesteId}}\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{apiUrl}}/reservas",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "reservas"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancelar Reserva",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{apiUrl}}/reservas/1/cancelar",
+                            "host": [
+                                "{{apiUrl}}"
+                            ],
+                            "path": [
+                                "reservas",
+                                "1",
+                                "cancelar"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Admin",
             "item": [
                 {
@@ -433,6 +519,151 @@
                             "response": []
                         }
                     ]
+                },
+                {
+                    "name": "Reservas",
+                    "item": [
+                        {
+                            "name": "Obter Reservas - Todas [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/reservas?status=ativa",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "reservas"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "ativa"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Retirar Reserva [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/reservas/1/retirar",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "reservas",
+                                        "1",
+                                        "retirar"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Cancelar Reserva [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/reservas/1/cancelar",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "reservas",
+                                        "1",
+                                        "cancelar"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Empréstimos",
+                    "item": [
+                        {
+                            "name": "Obter Empréstimos - Todos [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/emprestimos?status=ativo",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "emprestimos"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "ativo"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Emprestar no Balcão [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"usuario_id\": 2,\r\n    \"exemplar_id\": 1\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/emprestimos",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "emprestimos"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Devolver Empréstimo [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/emprestimos/1/devolver",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "emprestimos",
+                                        "1",
+                                        "devolver"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         }
@@ -566,7 +797,7 @@
     "variable": [
         {
             "key": "apiUrl",
-            "value": ""
+            "value": "http://localhost:5000/api"
         },
         {
             "key": "xsrfToken",
@@ -578,11 +809,11 @@
         },
         {
             "key": "publicUrl",
-            "value": ""
+            "value": "http://localhost:5000"
         },
         {
             "key": "livroTesteId",
-            "value": ""
+            "value": "11"
         }
     ]
 }
