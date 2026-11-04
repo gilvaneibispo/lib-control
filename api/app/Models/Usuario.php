@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class Usuario extends Authenticatable
 {
@@ -59,7 +60,7 @@ class Usuario extends Authenticatable
 
     public function fotoUrl(): ?string
     {
-        return $this->foto_path ? storage_path($this->foto_path) : null;
+        return $this->foto_path ? Storage::disk('public')->url($this->foto_path) : null;
     }
 
     public function reservas(): HasMany
