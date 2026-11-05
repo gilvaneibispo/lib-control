@@ -61,6 +61,11 @@ class Livro extends Model
         return $this->hasMany(Exemplar::class)->orderBy('id');
     }
 
+    public function exemplaresDisponiveis(): HasMany
+    {
+        return $this->hasMany(Exemplar::class)->where('status', StatusExemplar::Disponivel);
+    }
+
     public function scopeBusca(Builder $query, ?string $termo): void
     {
         $termo = trim((string) $termo);

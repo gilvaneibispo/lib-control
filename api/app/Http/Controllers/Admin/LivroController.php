@@ -28,6 +28,10 @@ class LivroController extends Controller
 
         $livros = Livro::query()
             ->with(['autores', 'area', 'subarea'])
+            ->withCount([
+                'exemplares as exemplares_total',
+                'exemplaresDisponiveis as exemplares_disponiveis',
+            ])
             ->latest('id')
             ->paginate($livrosPorPaginas)
             ->withQueryString();
