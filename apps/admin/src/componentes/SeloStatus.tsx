@@ -10,6 +10,14 @@ const STATUS: Record<string, Configuracao> = {
   indisponivel: { rotulo: 'Indisponível', tom: 'secondary' },
   reservado: { rotulo: 'Reservado', tom: 'primary' },
   emprestado: { rotulo: 'Emprestado', tom: 'primary' },
+  ativa: { rotulo: 'Ativa', tom: 'primary' },
+  convertida: { rotulo: 'Retirada', tom: 'success' },
+  expirada: { rotulo: 'Expirada', tom: 'secondary' },
+  cancelada: { rotulo: 'Cancelada', tom: 'secondary' },
+  ativo: { rotulo: 'Ativo', tom: 'primary' },
+  atrasado: { rotulo: 'Atrasado', tom: 'danger' },
+  devolvido: { rotulo: 'Devolvido', tom: 'success' },
+  bloqueado: { rotulo: 'Bloqueado', tom: 'danger' },
 };
 
 export function SeloStatus({ status }: { status: string }) {

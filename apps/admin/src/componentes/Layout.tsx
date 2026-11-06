@@ -14,6 +14,8 @@ interface ItemMenu {
 
 const ITENS_MENU: ItemMenu[] = [
   { rota: '/livros', icone: 'book', rotulo: 'Livros' },
+  { rota: '/reservas', icone: 'bookmark', rotulo: 'Reservas' },
+  { rota: '/emprestimos', icone: 'arrow-left-right', rotulo: 'Empréstimos' },
 ];
 
 const ID_MENU_LATERAL = 'menu-lateral';
@@ -134,14 +136,14 @@ export function Layout() {
           <nav
             className="nav nav-pills flex-column gap-1"
             aria-label="Navegação principal"
+            data-bs-dismiss="offcanvas"
+            data-bs-target={`#${ID_MENU_LATERAL}`}
           >
             {ITENS_MENU.map((item) => (
               <NavLink
                 key={item.rota}
                 to={item.rota}
                 className={classesDoItem}
-                data-bs-dismiss="offcanvas"
-                data-bs-target={`#${ID_MENU_LATERAL}`}
               >
                 <i className={`bi bi-${item.icone}`} aria-hidden="true" />
                 {item.rotulo}

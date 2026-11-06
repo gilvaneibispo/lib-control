@@ -1,3 +1,9 @@
+export function somenteDigitos(valor: string | null | undefined): string {
+  const texto = valor ?? '';
+
+  return texto.replace(/\D/g, '');
+}
+
 export function limparIsbn(valor: string | null | undefined): string {
   const texto = valor ?? '';
   const maiusculo = texto.toUpperCase();

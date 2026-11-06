@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ExigeAdmin } from './componentes/ExigeAdmin';
 import { Layout } from './componentes/Layout';
+import { Emprestimos } from './paginas/Emprestimos';
 import { Entrar } from './paginas/Entrar';
 import { LivroForm } from './paginas/LivroForm';
 import { Livros } from './paginas/Livros';
+import { Reservas } from './paginas/Reservas';
 
 function App() {
 
@@ -23,6 +25,9 @@ function App() {
           <Route path="novo" element={<LivroForm />} />
           <Route path=":id" element={<LivroForm />} />
         </Route>
+
+        <Route path="/reservas" element={<Reservas />} />
+        <Route path="/emprestimos" element={<Emprestimos />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

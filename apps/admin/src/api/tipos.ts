@@ -2,6 +2,10 @@ export type Papel = 'leitor' | 'admin';
 
 export type StatusExemplar = 'disponivel' | 'reservado' | 'emprestado' | 'indisponivel';
 
+export type StatusReserva = 'ativa' | 'convertida' | 'expirada' | 'cancelada';
+
+export type StatusEmprestimo = 'ativo' | 'atrasado' | 'devolvido';
+
 export interface Usuario {
   id: number;
   nome: string;
@@ -72,12 +76,67 @@ export interface LivroPayload {
   quantidade_exemplares?: number;
 }
 
+export interface LivroDoExemplar {
+  id: number;
+  titulo: string;
+  isbn: string | null;
+  capa_url: string | null;
+  autores: string[];
+}
+
 export interface Exemplar {
   id: number;
   livro_id: number;
   codigo: string;
   status: StatusExemplar;
   observacao: string | null;
+  livro?: LivroDoExemplar;
+}
+
+export interface ExemplarResumo {
+  id: number;
+  codigo: string;
+}
+
+export interface LeitorResumo {
+  id: number;
+  nome: string;
+  email: string;
+  cpf: string | null;
+  foto_url: string | null;
+  bloqueado: boolean;
+}
+
+export interface Reserva {
+  id: number;
+  status: StatusReserva;
+  expira_em: string;
+  finalizada_em: string | null;
+  criada_em: string | null;
+  livro?: Livro;
+  exemplar?: ExemplarResumo;
+  leitor?: LeitorResumo;
+}
+
+export interface Emprestimo {
+  id: number;
+  origem: 'reserva' | 'balcao';
+  status: StatusEmprestimo;
+  dias_restantes: number | null;
+  dias_atraso: number;
+  emprestado_em: string;
+  devolver_ate: string;
+  devolvido_em: string | null;
+  exemplar?: Exemplar;
+  leitor?: LeitorResumo;
+  emprestado_por?: string | null;
+  recebido_por?: string | null;
+}
+
+export interface ResultadoDevolucao {
+  data: Emprestimo;
+  dias_atraso: number;
+  leitor_desbloqueado: boolean;
 }
 
 export interface ExemplarPayload {

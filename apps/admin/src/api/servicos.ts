@@ -1,11 +1,14 @@
 import { api } from './cliente';
 import type {
   Area,
+  Emprestimo,
   Exemplar,
   ExemplarPayload,
   Livro,
   LivroPayload,
   Paginado,
+  Reserva,
+  ResultadoDevolucao,
   Sessao,
 } from './tipos';
 
@@ -109,4 +112,32 @@ export const admin = {
   },
 
   excluirExemplar: (id: number) => excluir(`/admin/exemplares/${id}`),
+
+  reservas: (filtros: Parametros) => {
+    return obter<Paginado<Reserva>>('/admin/reservas', filtros);
+  },
+
+  retirar: async (reservaId: number) => {
+    const url = `/admin/reservas/${reservaId}/retirar`;
+    const resposta = await enviar<Envelope<Emprestimo>>(url);
+
+    return resposta.data;
+  },
+
+  cancelarReserva: async (reservaId: number) => {
+    const url = `/admin/reservas/${reservaId}/cancelar`;
+    const resposta = await enviar<Envelope<Reserva>>(url);
+
+    return resposta.data;
+  },
+
+  emprestimos: (filtros: Parametros) => {
+    return obter<Paginado<Emprestimo>>('/admin/emprestimos', filtros);
+  },
+
+  devolver: (emprestimoId: number) => {
+    const url = `/admin/emprestimos/${emprestimoId}/devolver`;
+
+    return enviar<ResultadoDevolucao>(url);
+  },
 };
