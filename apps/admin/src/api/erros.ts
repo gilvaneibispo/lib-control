@@ -8,10 +8,14 @@ interface CorpoErro {
 }
 
 export const MENSAGENS_ERRO: Record<string, string> = {
-  LEITOR_BLOQUEADO: 'Seu cadastro está bloqueado. Procure a biblioteca.',
-  EMPRESTIMO_ATRASADO: 'Há um empréstimo em atraso. Devolva-o para voltar a reservar.',
-  LIMITE_ATINGIDO: 'Você atingiu o limite de reservas e empréstimos simultâneos.',
-  LIVRO_JA_COM_LEITOR: 'Você já tem uma reserva ou empréstimo deste livro.',
+  LEITOR_BLOQUEADO: 'O cadastro deste leitor está bloqueado.',
+  EMPRESTIMO_ATRASADO: 'O leitor tem um empréstimo em atraso.',
+  LIMITE_ATINGIDO: 'O leitor atingiu o limite de reservas e empréstimos simultâneos.',
+  LIVRO_JA_COM_LEITOR: 'O leitor já tem uma reserva ou empréstimo deste livro.',
+  USUARIO_NAO_LEITOR: 'Apenas leitores podem pegar empréstimos.',
+  EMPRESTIMO_JA_DEVOLVIDO: 'Este empréstimo já foi devolvido.',
+  LEITOR_JA_BLOQUEADO: 'Este leitor já está bloqueado.',
+  LEITOR_NAO_BLOQUEADO: 'Este leitor não está bloqueado.',
   SEM_EXEMPLAR_DISPONIVEL: 'Não há exemplar disponível deste livro no momento.',
   RESERVA_NAO_ATIVA: 'Esta reserva não está mais ativa.',
   EXEMPLAR_INDISPONIVEL: 'Este exemplar não está disponível.',

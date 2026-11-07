@@ -26,6 +26,7 @@ import { Avatar } from './Avatar';
 import { Campo } from './Campo';
 import { Capa } from './Capa';
 import { Carregando } from './Carregando';
+import { EditarLeitorModal } from './EditarLeitorModal';
 import { ErroCarregamento } from './ErroCarregamento';
 import { Modal } from './Modal';
 import { PainelPropriedades, type Propriedade } from './PainelPropriedades';
@@ -234,6 +235,7 @@ export function LeitorPainel({ id, aoFechar }: Props) {
 
   const [aba, setAba] = useState('emprestimos');
   const [modalAberto, setModalAberto] = useState(false);
+  const [editando, setEditando] = useState(false);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.leitores.detalhe(id),
@@ -302,24 +304,35 @@ export function LeitorPainel({ id, aoFechar }: Props) {
     : reservas(data.reservas);
 
   const rodape = (
-    <button
-      type="button"
-      className={classes(
-        'btn',
-        bloqueado ? 'btn-secondary' : 'btn-danger',
-      )}
-      onClick={() => setModalAberto(true)}
-    >
-      <i
+    <>
+      <button
+        type="button"
+        className="btn btn-outline-primary"
+        onClick={() => setEditando(true)}
+      >
+        <i className="bi bi-pencil me-1" aria-hidden="true" />
+        Editar
+      </button>
+
+      <button
+        type="button"
         className={classes(
-          'bi',
-          bloqueado ? 'bi-unlock' : 'bi-slash-circle',
-          'me-1',
+          'btn',
+          bloqueado ? 'btn-secondary' : 'btn-danger',
         )}
-        aria-hidden="true"
-      />
-      {bloqueado ? 'Desbloquear' : 'Bloquear'}
-    </button>
+        onClick={() => setModalAberto(true)}
+      >
+        <i
+          className={classes(
+            'bi',
+            bloqueado ? 'bi-unlock' : 'bi-slash-circle',
+            'me-1',
+          )}
+          aria-hidden="true"
+        />
+        {bloqueado ? 'Desbloquear' : 'Bloquear'}
+      </button>
+    </>
   );
 
   const tituloModal = bloqueado
@@ -398,6 +411,11 @@ export function LeitorPainel({ id, aoFechar }: Props) {
           />
         </Campo>
       </Modal>
+
+      <EditarLeitorModal
+        leitor={editando ? leitor : null}
+        aoFechar={() => setEditando(false)}
+      />
     </>
   );
 }

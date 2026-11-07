@@ -27,3 +27,11 @@ export function ocultarCpf(cpf: string | null | undefined): string {
 
   return `***.${meio}.${fim}-**`;
 }
+
+export function mascararCep(valor: string): string {
+  const digitos = somenteDigitos(valor).slice(0, 8);
+
+  if (digitos.length <= 5) return digitos;
+
+  return `${digitos.slice(0, 5)}-${digitos.slice(5)}`;
+}

@@ -8,6 +8,9 @@ export const queryKeys = {
     detalhe: (id: number) => ['livros', 'detalhe', id] as const,
     exemplares: (id: number) => ['livros', 'exemplares', id] as const,
   },
+  exemplares: {
+    disponiveis: (termo: string) => ['exemplares', 'disponiveis', termo] as const,
+  },
   reservas: {
     todas: ['reservas'] as const,
     lista: (filtros: Record<string, unknown>) => ['reservas', 'lista', filtros] as const,

@@ -6,6 +6,7 @@ import type {
   Exemplar,
   ExemplarPayload,
   Leitor,
+  LeitorPayload,
   Livro,
   LivroPayload,
   Paginado,
@@ -124,6 +125,13 @@ export const admin = {
 
   excluirExemplar: (id: number) => excluir(`/admin/exemplares/${id}`),
 
+  exemplaresDisponiveis: async (termo: string) => {
+    const filtros = { q: termo, disponivel: 1 };
+    const resposta = await obter<Envelope<Exemplar[]>>('/admin/exemplares', filtros);
+
+    return resposta.data;
+  },
+
   reservas: (filtros: Parametros) => {
     return obter<Paginado<Reserva>>('/admin/reservas', filtros);
   },
@@ -146,6 +154,13 @@ export const admin = {
     return obter<Paginado<Emprestimo>>('/admin/emprestimos', filtros);
   },
 
+  emprestar: async (usuarioId: number, exemplarId: number) => {
+    const corpo = { usuario_id: usuarioId, exemplar_id: exemplarId };
+    const resposta = await enviar<Envelope<Emprestimo>>('/admin/emprestimos', corpo);
+
+    return resposta.data;
+  },
+
   devolver: (emprestimoId: number) => {
     const url = `/admin/emprestimos/${emprestimoId}/devolver`;
 
@@ -157,6 +172,13 @@ export const admin = {
   },
 
   usuario: (id: number) => obter<DetalheLeitor>(`/admin/usuarios/${id}`),
+
+  atualizarUsuario: async (id: number, dados: LeitorPayload) => {
+    const url = `/admin/usuarios/${id}`;
+    const resposta = await substituir<Envelope<Leitor>>(url, dados);
+
+    return resposta.data;
+  },
 
   bloquear: async (id: number, motivo: string) => {
     const url = `/admin/usuarios/${id}/bloquear`;

@@ -20,6 +20,7 @@ import { EmprestimoPainel } from '../componentes/EmprestimoPainel';
 import { ErroCarregamento } from '../componentes/ErroCarregamento';
 import { EstadoVazio } from '../componentes/EstadoVazio';
 import { Modal } from '../componentes/Modal';
+import { NovoEmprestimoModal } from '../componentes/NovoEmprestimoModal';
 import { Paginacao } from '../componentes/Paginacao';
 import { SeloStatus } from '../componentes/SeloStatus';
 import { Tabela } from '../componentes/Tabela';
@@ -75,6 +76,7 @@ export function Emprestimos() {
   const selecionado = Number(params.get('sel')) || null;
 
   const [devolvendo, setDevolvendo] = useState<Emprestimo | null>(null);
+  const [emprestando, setEmprestando] = useState(false);
 
   const filtros: Record<string, string | number> = { status, page: pagina };
 
@@ -144,6 +146,20 @@ export function Emprestimos() {
 
     onError: (erro) => toast.erro(mensagemDeErro(erro)),
   });
+
+  function aoEmprestar(novo: Emprestimo) {
+    setEmprestando(false);
+
+    const novos = new URLSearchParams();
+
+    // Filtra pelo tombo para garantir que o novo empréstimo apareça na lista.
+    novos.set('status', 'ativo');
+    novos.set('sel', String(novo.id));
+
+    if (novo.exemplar?.codigo) novos.set('q', novo.exemplar.codigo);
+
+    setParams(novos, { replace: true });
+  }
 
   function fecharDevolucao() {
     setDevolvendo(null);
@@ -351,6 +367,16 @@ export function Emprestimos() {
       <CabecalhoPagina
         titulo="Empréstimos"
         descricao="Acompanhe prazos e registre devoluções."
+        acoes={
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setEmprestando(true)}
+          >
+            <i className="bi bi-plus-lg me-1" aria-hidden="true" />
+            Novo empréstimo
+          </button>
+        }
       />
 
       <Abas
@@ -389,6 +415,12 @@ export function Emprestimos() {
       </div>
 
       {modalDevolucao()}
+
+      <NovoEmprestimoModal
+        aberto={emprestando}
+        aoFechar={() => setEmprestando(false)}
+        aoEmprestar={aoEmprestar}
+      />
     </>
   );
 }

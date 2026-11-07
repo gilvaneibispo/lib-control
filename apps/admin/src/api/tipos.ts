@@ -130,6 +130,20 @@ export interface Leitor {
   emprestimos_nao_devolvidos_count?: number;
 }
 
+export interface LeitorPayload {
+  nome: string;
+  email: string;
+  cpf: string;
+  data_nascimento: string;
+  cep: string;
+  uf: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero: string;
+  complemento: string | null;
+}
+
 export interface Elegibilidade {
   elegivel: boolean;
   codigo: string | null;
