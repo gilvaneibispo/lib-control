@@ -50,6 +50,34 @@ final class ElegibilidadeService
         }
     }
 
+    public function resumo(Usuario $leitor, ?int $livroId = null): array
+    {
+        $codigo = $this->avaliar($leitor, $livroId);
+
+        return [
+            'elegivel' => $codigo === null,
+            'codigo' => $codigo?->value,
+            'mensagem' => $codigo?->mensagem(),
+            'itens_em_uso' => $this->itensEmUso($leitor),
+            'limite' => $this->limite(),
+        ];
+    }
+
+    public function itensEmUso(Usuario $leitor): int
+    {
+        $reservas = Reserva::query()
+            ->where('usuario_id', $leitor->id)
+            ->ativas()
+            ->count();
+
+        $emprestimos = Emprestimo::query()
+            ->where('usuario_id', $leitor->id)
+            ->naoDevolvidos()
+            ->count();
+
+        return $reservas + $emprestimos;
+    }
+
     private function limite(): int
     {
         return (int) config('lib-control.limite_itens_por_leitor');

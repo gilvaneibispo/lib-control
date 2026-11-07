@@ -6,6 +6,7 @@ use App\Enums\CodigoErro;
 use App\Exceptions\RegrasException;
 use App\Models\Emprestimo;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\Log;
 
 final class BloqueioService
 {
@@ -19,6 +20,28 @@ final class BloqueioService
             'bloqueado_em' => now(),
             'motivo_bloqueio' => $motivo,
             'bloqueio_automatico' => $automatico,
+        ])->save();
+
+        return $leitor;
+    }
+
+    public function desbloquear(Usuario $leitor, string $motivo, ?Usuario $admin = null): Usuario
+    {
+        if (!$leitor->isBloqueado()) {
+            throw new RegrasException(CodigoErro::LeitorNaoBloqueado);
+        }
+
+        Log::info('Leitor desbloqueado', [
+            'leitor_id' => $leitor->id,
+            'admin_id' => $admin?->id,
+            'motivo' => $motivo,
+            'motivo_bloqueio_anterior' => $leitor->motivo_bloqueio,
+        ]);
+
+        $leitor->forceFill([
+            'bloqueado_em' => null,
+            'motivo_bloqueio' => null,
+            'bloqueio_automatico' => false,
         ])->save();
 
         return $leitor;

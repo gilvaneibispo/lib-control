@@ -24,7 +24,12 @@ class UsuarioResource extends JsonResource
             'numero' => $this->numero,
             'complemento' => $this->complemento,
             'papel' => $this->papel->value,
-            'criado_em' => $this->created_at?->toIso8601String()
+            'bloqueado' => $this->isBloqueado(),
+            'bloqueado_em' => $this->bloqueado_em?->toIso8601String(),
+            'motivo_bloqueio' => $this->motivo_bloqueio,
+            'criado_em' => $this->created_at?->toIso8601String(),
+            'reservas_ativas_count' => $this->whenCounted('reservasAtivas'),
+            'emprestimos_nao_devolvidos_count' => $this->whenCounted('emprestimosNaoDevolvidos'),
         ];
     }
 }

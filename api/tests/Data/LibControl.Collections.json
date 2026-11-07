@@ -276,6 +276,29 @@
             "name": "Admin",
             "item": [
                 {
+                    "name": "Painel",
+                    "item": [
+                        {
+                            "name": "Obter Painel [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/dashboard",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "dashboard"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
                     "name": "Livros",
                     "item": [
                         {
@@ -658,6 +681,148 @@
                                         "emprestimos",
                                         "1",
                                         "devolver"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Leitores",
+                    "item": [
+                        {
+                            "name": "Obter Leitores - Todos [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/usuarios?papel=leitor&q=&bloqueado=0",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "usuarios"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "papel",
+                                            "value": "leitor"
+                                        },
+                                        {
+                                            "key": "q",
+                                            "value": ""
+                                        },
+                                        {
+                                            "key": "bloqueado",
+                                            "value": "0"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Obter Leitor [Adm]",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/usuarios/1",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "usuarios",
+                                        "1"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Atualizar Leitor [Adm]",
+                            "request": {
+                                "method": "PUT",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"nome\": \"Gilvanei Bispo\",\r\n    \"cidade\": \"Feira de Santana\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/usuarios/1",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "usuarios",
+                                        "1"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Bloquear Leitor [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"motivo\": \"Danificou um livro\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/usuarios/1/bloquear",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "usuarios",
+                                        "1",
+                                        "bloquear"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Desbloquear Leitor [Adm]",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"motivo\": \"Ressarciu o dano\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{apiUrl}}/admin/usuarios/1/desbloquear",
+                                    "host": [
+                                        "{{apiUrl}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "usuarios",
+                                        "1",
+                                        "desbloquear"
                                     ]
                                 }
                             },
