@@ -7,8 +7,9 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { queryKeys } from '../api/queryKeys';
-import { admin } from '../api/servicos';
+import { admin, catalogo } from '../api/servicos';
 import type { Livro, Paginado } from '../api/tipos';
+import { Busca } from '../componentes/Busca';
 import { CabecalhoPagina } from '../componentes/CabecalhoPagina';
 import { Capa } from '../componentes/Capa';
 import { Carregando } from '../componentes/Carregando';
@@ -44,13 +45,29 @@ export function Livros() {
   const navegar = useNavigate();
   const local = useLocation();
 
+  const q = params.get('q') ?? '';
+  const area = params.get('area') ?? '';
   const pagina = Number(params.get('page') ?? 1);
   const selecionado = Number(params.get('sel')) || null;
 
+  const filtros: Record<string, string | number> = { page: pagina };
+
+  if (q) filtros.q = q;
+
+  if (area) filtros.area = area;
+
+  const filtrando = Boolean(q) || Boolean(area);
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: queryKeys.livros.lista({ page: pagina }),
-    queryFn: () => admin.livros(pagina),
+    queryKey: queryKeys.livros.lista(filtros),
+    queryFn: () => admin.livros(filtros),
     placeholderData: keepPreviousData,
+  });
+
+  const { data: areas = [] } = useQuery({
+    queryKey: queryKeys.areas,
+    queryFn: catalogo.areas,
+    staleTime: Infinity,
   });
 
   function mudar(chave: string, valor: string) {
@@ -58,6 +75,10 @@ export function Livros() {
 
     if (valor) novos.set(chave, valor);
     else novos.delete(chave);
+
+    const mudouFiltro = chave !== 'page' && chave !== 'sel';
+
+    if (mudouFiltro) novos.delete('page');
 
     setParams(novos, { replace: true });
   }
@@ -149,11 +170,19 @@ export function Livros() {
     if (error) return <ErroCarregamento erro={error} aoTentar={refetch} />;
 
     if (!data || data.data.length === 0) {
+      const titulo = filtrando
+        ? 'Nenhum livro encontrado'
+        : 'Nenhum livro cadastrado';
+
+      const descricao = filtrando
+        ? 'Ajuste a busca ou o filtro de área.'
+        : 'Cadastre o primeiro livro do acervo.';
+
       return (
         <EstadoVazio
           icone="book"
-          titulo="Nenhum livro cadastrado"
-          descricao="Cadastre o primeiro livro do acervo."
+          titulo={titulo}
+          descricao={descricao}
         />
       );
     }
@@ -198,6 +227,39 @@ export function Livros() {
           </button>
         }
       />
+
+      <div
+        className={classes(
+          'd-flex',
+          'flex-wrap',
+          'align-items-center',
+          'gap-3',
+          'mb-3',
+        )}
+      >
+        <Busca
+          valor={q}
+          aoBuscar={(termo) => mudar('q', termo)}
+          placeholder="Título, autor ou ISBN"
+        />
+
+        <div style={{ minWidth: 220 }}>
+          <select
+            className="form-select"
+            aria-label="Filtrar por área"
+            value={area}
+            onChange={(e) => mudar('area', e.target.value)}
+          >
+            <option value="">Todas as áreas</option>
+
+            {areas.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="row g-4">
         <section className="col-xl-7">

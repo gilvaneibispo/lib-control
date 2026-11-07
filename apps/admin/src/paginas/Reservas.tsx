@@ -395,22 +395,22 @@ export function Reservas() {
         descricao="Fila de retiradas, da reserva mais próxima de vencer."
       />
 
+      <Abas
+        abas={ABAS}
+        ativa={status}
+        aoMudar={(valor) => mudar('status', valor)}
+      />
+
+      <div className="mb-3">
+        <Busca
+          valor={q}
+          aoBuscar={(termo) => mudar('q', termo)}
+          placeholder="Leitor, CPF ou livro"
+        />
+      </div>
+
       <div className="row g-4">
         <section className="col-xl-7">
-          <Abas
-            abas={ABAS}
-            ativa={status}
-            aoMudar={(valor) => mudar('status', valor)}
-          />
-
-          <div className="mb-3">
-            <Busca
-              valor={q}
-              aoBuscar={(termo) => mudar('q', termo)}
-              placeholder="Leitor, CPF ou livro"
-            />
-          </div>
-
           {lista()}
         </section>
 

@@ -107,6 +107,37 @@ export interface LeitorResumo {
   bloqueado: boolean;
 }
 
+export interface Leitor {
+  id: number;
+  nome: string;
+  email: string;
+  cpf: string | null;
+  data_nascimento: string | null;
+  foto_url: string | null;
+  cep: string | null;
+  uf: string | null;
+  cidade: string | null;
+  bairro: string | null;
+  rua: string | null;
+  numero: string | null;
+  complemento: string | null;
+  papel: Papel;
+  bloqueado: boolean;
+  bloqueado_em: string | null;
+  motivo_bloqueio: string | null;
+  criado_em: string | null;
+  reservas_ativas_count?: number;
+  emprestimos_nao_devolvidos_count?: number;
+}
+
+export interface Elegibilidade {
+  elegivel: boolean;
+  codigo: string | null;
+  mensagem: string | null;
+  itens_em_uso: number;
+  limite: number;
+}
+
 export interface Reserva {
   id: number;
   status: StatusReserva;
@@ -137,6 +168,27 @@ export interface ResultadoDevolucao {
   data: Emprestimo;
   dias_atraso: number;
   leitor_desbloqueado: boolean;
+}
+
+export interface DetalheLeitor {
+  data: Leitor;
+  elegibilidade: Elegibilidade | null;
+  reservas: Reserva[];
+  emprestimos: Emprestimo[];
+}
+
+export interface ContadoresPainel {
+  reservas_a_retirar: number;
+  reservas_vencem_hoje: number;
+  emprestimos_ativos: number;
+  emprestimos_atrasados: number;
+  leitores_bloqueados: number;
+}
+
+export interface Painel {
+  contadores: ContadoresPainel;
+  retiradas_pendentes: Reserva[];
+  atrasados: Emprestimo[];
 }
 
 export interface ExemplarPayload {

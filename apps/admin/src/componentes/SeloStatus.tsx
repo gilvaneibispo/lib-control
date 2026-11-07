@@ -18,6 +18,7 @@ const STATUS: Record<string, Configuracao> = {
   atrasado: { rotulo: 'Atrasado', tom: 'danger' },
   devolvido: { rotulo: 'Devolvido', tom: 'success' },
   bloqueado: { rotulo: 'Bloqueado', tom: 'danger' },
+  regular: { rotulo: 'Regular', tom: 'success' },
 };
 
 export function SeloStatus({ status }: { status: string }) {

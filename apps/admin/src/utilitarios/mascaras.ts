@@ -8,6 +8,15 @@ export function mascararIsbn(valor: string): string {
   return semHifensRepetidos.slice(0, 17);
 }
 
+export function mascararCpf(valor: string): string {
+  const digitos = somenteDigitos(valor).slice(0, 11);
+
+  const comPrimeiroPonto = digitos.replace(/^(\d{3})(\d)/, '$1.$2');
+  const comSegundoPonto = comPrimeiroPonto.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+
+  return comSegundoPonto.replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+}
+
 export function ocultarCpf(cpf: string | null | undefined): string {
   const digitos = somenteDigitos(cpf);
 

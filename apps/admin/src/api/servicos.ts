@@ -1,12 +1,15 @@
 import { api } from './cliente';
 import type {
   Area,
+  DetalheLeitor,
   Emprestimo,
   Exemplar,
   ExemplarPayload,
+  Leitor,
   Livro,
   LivroPayload,
   Paginado,
+  Painel,
   Reserva,
   ResultadoDevolucao,
   Sessao,
@@ -67,7 +70,15 @@ export const catalogo = {
 };
 
 export const admin = {
-  livros: (pagina = 1) => obter<Paginado<Livro>>('/admin/livros', { page: pagina }),
+  painel: async () => {
+    const resposta = await obter<Envelope<Painel>>('/admin/dashboard');
+
+    return resposta.data;
+  },
+
+  livros: (filtros: Parametros) => {
+    return obter<Paginado<Livro>>('/admin/livros', filtros);
+  },
 
   livro: async (id: number) => {
     const resposta = await obter<Envelope<Livro>>(`/admin/livros/${id}`);
@@ -139,5 +150,27 @@ export const admin = {
     const url = `/admin/emprestimos/${emprestimoId}/devolver`;
 
     return enviar<ResultadoDevolucao>(url);
+  },
+
+  usuarios: (filtros: Parametros) => {
+    return obter<Paginado<Leitor>>('/admin/usuarios', filtros);
+  },
+
+  usuario: (id: number) => obter<DetalheLeitor>(`/admin/usuarios/${id}`),
+
+  bloquear: async (id: number, motivo: string) => {
+    const url = `/admin/usuarios/${id}/bloquear`;
+    const corpo = { motivo };
+    const resposta = await enviar<Envelope<Leitor>>(url, corpo);
+
+    return resposta.data;
+  },
+
+  desbloquear: async (id: number, motivo: string) => {
+    const url = `/admin/usuarios/${id}/desbloquear`;
+    const corpo = { motivo };
+    const resposta = await enviar<Envelope<Leitor>>(url, corpo);
+
+    return resposta.data;
   },
 };

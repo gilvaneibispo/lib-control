@@ -10,12 +10,15 @@ interface ItemMenu {
   rota: string;
   icone: string;
   rotulo: string;
+  exato?: boolean;
 }
 
 const ITENS_MENU: ItemMenu[] = [
+  { rota: '/', icone: 'speedometer2', rotulo: 'Painel', exato: true },
   { rota: '/livros', icone: 'book', rotulo: 'Livros' },
   { rota: '/reservas', icone: 'bookmark', rotulo: 'Reservas' },
   { rota: '/emprestimos', icone: 'arrow-left-right', rotulo: 'Empréstimos' },
+  { rota: '/leitores', icone: 'person', rotulo: 'Leitores' },
 ];
 
 const ID_MENU_LATERAL = 'menu-lateral';
@@ -143,6 +146,7 @@ export function Layout() {
               <NavLink
                 key={item.rota}
                 to={item.rota}
+                end={item.exato}
                 className={classesDoItem}
               >
                 <i className={`bi bi-${item.icone}`} aria-hidden="true" />

@@ -1,6 +1,7 @@
 export const queryKeys = {
   sessao: ['sessao'] as const,
   areas: ['areas'] as const,
+  painel: ['painel'] as const,
   livros: {
     todos: ['livros'] as const,
     lista: (filtros: Record<string, unknown>) => ['livros', 'lista', filtros] as const,
@@ -14,5 +15,10 @@ export const queryKeys = {
   emprestimos: {
     todos: ['emprestimos'] as const,
     lista: (filtros: Record<string, unknown>) => ['emprestimos', 'lista', filtros] as const,
+  },
+  leitores: {
+    todos: ['leitores'] as const,
+    lista: (filtros: Record<string, unknown>) => ['leitores', 'lista', filtros] as const,
+    detalhe: (id: number) => ['leitores', 'detalhe', id] as const,
   },
 };

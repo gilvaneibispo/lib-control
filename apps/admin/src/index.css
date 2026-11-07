@@ -58,3 +58,29 @@ body {
     margin: 7.5vh auto;
   }
 }
+
+.card-numero {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-numero > .card-body {
+  position: relative;
+}
+
+.card-numero-icone {
+  position: absolute;
+  top: 15px;
+  right: -12px;
+  display: block;
+  font-size: 50pt;
+  line-height: 1;
+  color: var(--bs-primary);
+  opacity: 0.08;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.card-numero:hover .card-numero-icone {
+  opacity: 0.18;
+}

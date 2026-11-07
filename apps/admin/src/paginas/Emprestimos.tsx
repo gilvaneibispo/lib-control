@@ -353,22 +353,22 @@ export function Emprestimos() {
         descricao="Acompanhe prazos e registre devoluções."
       />
 
+      <Abas
+        abas={ABAS}
+        ativa={status}
+        aoMudar={(valor) => mudar('status', valor)}
+      />
+
+      <div className="mb-3">
+        <Busca
+          valor={q}
+          aoBuscar={(termo) => mudar('q', termo)}
+          placeholder="Leitor, CPF, livro ou tombo"
+        />
+      </div>
+
       <div className="row g-4">
         <section className="col-xl-7">
-          <Abas
-            abas={ABAS}
-            ativa={status}
-            aoMudar={(valor) => mudar('status', valor)}
-          />
-
-          <div className="mb-3">
-            <Busca
-              valor={q}
-              aoBuscar={(termo) => mudar('q', termo)}
-              placeholder="Leitor, CPF, livro ou tombo"
-            />
-          </div>
-
           {lista()}
         </section>
 
