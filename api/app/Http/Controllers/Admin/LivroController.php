@@ -24,7 +24,11 @@ class LivroController extends Controller
         $livrosPorPaginas = config('lib-control.por_pagina');
         $request->validate([
             'q' => ['nullable', 'string', 'max:200'],
+            'area' => ['nullable', 'integer'],
         ]);
+
+        $termo = $request->string('q')->toString();
+        $areaId = $request->integer('area');
 
         $livros = Livro::query()
             ->with(['autores', 'area', 'subarea'])
@@ -32,6 +36,8 @@ class LivroController extends Controller
                 'exemplares as exemplares_total',
                 'exemplaresDisponiveis as exemplares_disponiveis',
             ])
+            ->busca($termo)
+            ->when($request->filled('area'), fn($q) => $q->where('area_id', $areaId))
             ->latest('id')
             ->paginate($livrosPorPaginas)
             ->withQueryString();
