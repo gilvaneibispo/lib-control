@@ -23,6 +23,8 @@ enum CodigoErro: string
     case PapelIncompativel = 'PAPEL_INCOMPATIVEL';
 
     case CapaInvalida = 'CAPA_INVALIDA';
+    case IsbnInvalido = 'ISBN_INVALIDO';
+    case IsbnNaoEncontrado = 'ISBN_NAO_ENCONTRADO';
 
     public function mensagem(): string
     {
@@ -43,6 +45,8 @@ enum CodigoErro: string
             self::CredenciaisInvalidas => 'E-mail ou senha incorretos.',
             self::PapelIncompativel => 'Este usuário não tem acesso a este aplicativo.',
             self::CapaInvalida => 'Não foi possível obter a imagem da capa.',
+            self::IsbnInvalido => 'ISBN inválido.',
+            self::IsbnNaoEncontrado => 'Nenhum dado encontrado para este ISBN.',
         };
     }
 }

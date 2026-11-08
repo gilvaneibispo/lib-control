@@ -3,6 +3,7 @@ import {
   formatarData,
   formatarDataHora,
   formatarDiaSemana,
+  formatarIsbn,
   listarAutores,
 } from '../utilitarios/formatadores';
 import { Capa } from './Capa';
@@ -68,7 +69,7 @@ function propriedades(reserva: Reserva): Propriedade[] {
   if (isbn) {
     lista.push({
       rotulo: 'ISBN',
-      valor: <span className="font-monospace">{isbn}</span>,
+      valor: <span className="font-monospace">{formatarIsbn(isbn)}</span>,
     });
   }
 

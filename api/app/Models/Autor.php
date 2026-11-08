@@ -11,6 +11,13 @@ class Autor extends Model
 
     protected $fillable = ['nome'];
 
+    public static function normalizarNome(string $nome): string
+    {
+        $espacosUnicos = (string) preg_replace('/\s+/u', ' ', $nome);
+
+        return trim($espacosUnicos);
+    }
+
     public function livros(): BelongsToMany
     {
         return $this->belongsToMany(Livro::class, 'autor_livro')->withPivot('ordem');

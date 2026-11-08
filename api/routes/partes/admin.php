@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AutorController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmprestimoController;
 use App\Http\Controllers\Admin\ExemplarController;
+use App\Http\Controllers\Admin\IsbnController;
 use App\Http\Controllers\Admin\LivroController;
 use App\Http\Controllers\Admin\ReservaController;
 use App\Http\Controllers\Admin\UsuarioController;
@@ -13,6 +15,8 @@ Route::get('/dashboard', DashboardController::class);
 Route::apiResource('livros', LivroController::class);
 Route::post('/livros/{livro}/capa', [LivroController::class, 'capa']);
 Route::delete('/livros/{livro}/capa', [LivroController::class, 'removerCapa']);
+Route::get('/autores', [AutorController::class, 'index']);
+Route::get('/isbn/{isbn}', [IsbnController::class, 'show']);
 
 // Exemplares
 Route::get('/livros/{livro}/exemplares', [ExemplarController::class, 'index']);

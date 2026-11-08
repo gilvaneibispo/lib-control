@@ -53,17 +53,17 @@ class LivroController extends Controller
 
         $livro = $this->livros->criar($request->validated());
 
-        return (new LivroResource($livro->load(['area', 'subarea'])))->response()->setStatusCode(201);
+        return (new LivroResource($livro->load(['autores', 'area', 'subarea'])))->response()->setStatusCode(201);
     }
 
     public function show(Livro $livro): JsonResponse
     {
-        return (new LivroResource($livro->load(['area', 'subarea'])))->response();
+        return (new LivroResource($livro->load(['autores', 'area', 'subarea'])))->response();
     }
 
     public function update(LivroRequest $request, Livro $livro): LivroResource
     {
-        return new LivroResource($this->livros->atualizar($livro, $request->validated())->load(['area', 'subarea']));
+        return new LivroResource($this->livros->atualizar($livro, $request->validated())->load(['autores', 'area', 'subarea']));
     }
 
     public function destroy(Livro $livro): JsonResponse
@@ -84,13 +84,13 @@ class LivroController extends Controller
             $capas->baixar($livro, $url, $origem);
         }
 
-        return new LivroResource($livro->load(['area', 'subarea']));
+        return new LivroResource($livro->load(['autores', 'area', 'subarea']));
     }
 
     public function removerCapa(Livro $livro, CapaService $capas): LivroResource
     {
         $capas->remover($livro);
 
-        return new LivroResource($livro->load(['area', 'subarea']));
+        return new LivroResource($livro->load(['autores', 'area', 'subarea']));
     }
 }

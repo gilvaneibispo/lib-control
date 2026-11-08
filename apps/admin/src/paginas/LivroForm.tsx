@@ -1,18 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import {
   Controller,
   useForm,
   useWatch,
   type ControllerRenderProps,
 } from 'react-hook-form';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { errosDeValidacao, mensagemDeErro } from '../api/erros';
 import { queryKeys } from '../api/queryKeys';
 import { admin, catalogo } from '../api/servicos';
-import type { Livro, LivroPayload } from '../api/tipos';
+import type {
+  CapaCandidata,
+  Livro,
+  LivroPayload,
+  ResultadoIsbn,
+} from '../api/tipos';
+import { Alerta } from '../componentes/Alerta';
 import { AutoresInput } from '../componentes/AutoresInput';
 import { Campo } from '../componentes/Campo';
 import { Capa } from '../componentes/Capa';
@@ -22,6 +28,7 @@ import { Modal } from '../componentes/Modal';
 import { SeletorArquivo } from '../componentes/SeletorArquivo';
 import { useToast } from '../componentes/toastContexto';
 import { classes } from '../utilitarios/classes';
+import { formatarIsbn } from '../utilitarios/formatadores';
 import { mascararIsbn } from '../utilitarios/mascaras';
 import { isbnValido, normalizarIsbn } from '../utilitarios/validadores';
 
@@ -32,6 +39,23 @@ const ANO_MAXIMO = new Date().getFullYear() + 1;
 const TAMANHO_MAXIMO_CAPA = 5 * 1024 * 1024;
 
 const LARGURA_CAPA = { width: 110 };
+
+const LARGURA_CANDIDATA = { width: 56 };
+
+const NOMES_FONTES: Record<string, string> = {
+  brasilapi: 'BrasilAPI',
+  openlibrary: 'Open Library',
+  google: 'Google Books',
+};
+
+const CAMPOS_METADADOS = [
+  'titulo',
+  'subtitulo',
+  'editora',
+  'ano',
+  'sinopse',
+  'autores',
+] as const;
 
 function isbnOpcionalValido(valor: string): boolean {
   if (!valor.trim()) return true;
@@ -79,6 +103,21 @@ type Dados = z.infer<typeof esquema>;
 
 type CampoArea = ControllerRenderProps<Dados, 'area_id'>;
 
+type CampoIsbn = ControllerRenderProps<Dados, 'isbn'>;
+
+type CampoAutores = ControllerRenderProps<Dados, 'autores'>;
+
+type CampoMetadado = (typeof CAMPOS_METADADOS)[number];
+
+type ValorMetadado = string | string[];
+
+type Divergencias = Partial<Record<CampoMetadado, ValorMetadado>>;
+
+type EscolhaCapa =
+  | { tipo: 'candidata'; capa: CapaCandidata }
+  | { tipo: 'arquivo'; arquivo: File }
+  | null;
+
 const VAZIO: Dados = {
   titulo: '',
   subtitulo: '',
@@ -93,6 +132,31 @@ const VAZIO: Dados = {
   autores: [],
   quantidade_exemplares: 1,
 };
+
+function nomeFonte(fonte: string): string {
+  return NOMES_FONTES[fonte] ?? fonte;
+}
+
+function estaVazio(valor: ValorMetadado): boolean {
+  if (Array.isArray(valor)) return valor.length === 0;
+
+  return !valor.trim();
+}
+
+function metadadosDoIsbn(resultado: ResultadoIsbn): Record<CampoMetadado, ValorMetadado> {
+  const ano = resultado.ano
+    ? String(resultado.ano)
+    : '';
+
+  return {
+    titulo: resultado.titulo ?? '',
+    subtitulo: resultado.subtitulo ?? '',
+    editora: resultado.editora ?? '',
+    ano,
+    sinopse: resultado.sinopse ?? '',
+    autores: resultado.autores,
+  };
+}
 
 function textoOuNulo(valor: string): string | null {
   const limpo = valor.trim();
@@ -122,7 +186,7 @@ function paraFormulario(livro: Livro): Dados {
   return {
     titulo: livro.titulo,
     subtitulo: livro.subtitulo ?? '',
-    isbn: livro.isbn ?? '',
+    isbn: formatarIsbn(livro.isbn),
     ano,
     editora: livro.editora ?? '',
     sinopse: livro.sinopse ?? '',
@@ -172,8 +236,14 @@ export function LivroForm() {
 
   const editando = livroId !== null;
 
-  const [arquivoCapa, setArquivoCapa] = useState<File | null>(null);
+  const [escolhaCapa, setEscolhaCapa] = useState<EscolhaCapa>(null);
   const [erroCapa, setErroCapa] = useState<string | null>(null);
+  const [isbnBusca, setIsbnBusca] = useState<ResultadoIsbn | null>(null);
+  const [isbnAviso, setIsbnAviso] = useState<string | null>(null);
+  const [divergencias, setDivergencias] = useState<Divergencias>({});
+
+  const ultimoIsbnBuscado = useRef<string | null>(null);
+  const editados = useRef<Set<string>>(new Set());
 
   function fechar() {
     navegar({ pathname: '/livros', search: local.search });
@@ -184,6 +254,7 @@ export function LivroForm() {
     handleSubmit,
     control,
     setValue,
+    getValues,
     reset,
     setError,
     formState,
@@ -210,11 +281,19 @@ export function LivroForm() {
     const valores = paraFormulario(livro.data);
 
     reset(valores);
+
+    ultimoIsbnBuscado.current = livro.data.isbn;
+
+    for (const campo of CAMPOS_METADADOS) {
+      editados.current.add(campo);
+    }
   }, [livro.data, reset]);
 
   const areaId = useWatch({ control, name: 'area_id' });
 
   const tituloDigitado = useWatch({ control, name: 'titulo' });
+
+  const isbnDigitado = useWatch({ control, name: 'isbn' });
 
   const subareas = useMemo(() => {
     const area = areas.find((a) => String(a.id) === areaId);
@@ -233,7 +312,15 @@ export function LivroForm() {
       let avisoCapa: string | null = null;
 
       try {
-        if (arquivoCapa) await admin.capaPorArquivo(salvo.id, arquivoCapa);
+        if (escolhaCapa?.tipo === 'candidata') {
+          const { url, origem } = escolhaCapa.capa;
+
+          await admin.capaPorUrl(salvo.id, url, origem);
+        }
+
+        if (escolhaCapa?.tipo === 'arquivo') {
+          await admin.capaPorArquivo(salvo.id, escolhaCapa.arquivo);
+        }
       } catch (erro) {
         avisoCapa = mensagemDeErro(erro);
       }
@@ -253,7 +340,7 @@ export function LivroForm() {
 
       if (avisoCapa) toast.erro(`O livro foi salvo, mas a capa não: ${avisoCapa}`);
 
-      setArquivoCapa(null);
+      setEscolhaCapa(null);
 
       if (editando) {
         fechar();
@@ -287,9 +374,41 @@ export function LivroForm() {
     onError: (erro) => toast.erro(mensagemDeErro(erro)),
   });
 
+  const buscaIsbn = useMutation({
+    mutationFn: (isbn: string) => admin.isbn(isbn),
+
+    onSuccess: (resultado) => {
+      setIsbnBusca(resultado);
+
+      setIsbnAviso(null);
+
+      aplicarMetadados(resultado);
+
+      const primeiraCapa = resultado.capas[0];
+      const semCapaEscolhida = !escolhaCapa && !livro.data?.capa_url;
+
+      if (primeiraCapa && semCapaEscolhida) {
+        setEscolhaCapa({ tipo: 'candidata', capa: primeiraCapa });
+      }
+    },
+
+    onError: (erro) => {
+      setIsbnBusca(null);
+
+      setIsbnAviso(mensagemDeErro(erro));
+    },
+  });
+
   const erros = formState.errors;
 
   const capaAtual = livro.data?.capa_url;
+
+  const capasEncontradas = isbnBusca?.capas ?? [];
+
+  const livroExistente = isbnBusca?.livro_existente ?? null;
+
+  const outroLivroComIsbn = livroExistente !== null
+    && livroExistente.id !== livroId;
 
   const carregando = editando && livro.isLoading;
 
@@ -299,15 +418,110 @@ export function LivroForm() {
     setValue('subarea_id', '');
   }
 
+  function marcarEditado(campo: string) {
+    editados.current.add(campo);
+  }
+
+  function registrarMetadado(campo: CampoMetadado) {
+    const registro = register(campo);
+
+    function aoMudar(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+      marcarEditado(campo);
+
+      return registro.onChange(e);
+    }
+
+    return { ...registro, onChange: aoMudar };
+  }
+
+  function buscarIsbn(forcar = false) {
+    const isbn = normalizarIsbn(getValues('isbn'));
+
+    if (!isbn) return;
+
+    if (!forcar && isbn === ultimoIsbnBuscado.current) return;
+
+    ultimoIsbnBuscado.current = isbn;
+
+    buscaIsbn.mutate(isbn);
+  }
+
+  function aplicarMetadados(resultado: ResultadoIsbn) {
+    const novos = metadadosDoIsbn(resultado);
+    const divergentes: Divergencias = {};
+
+    for (const campo of CAMPOS_METADADOS) {
+      const novo = novos[campo];
+
+      if (estaVazio(novo)) continue;
+
+      const atual = getValues(campo);
+      const podeSubstituir = estaVazio(atual) || !editados.current.has(campo);
+
+      if (podeSubstituir) {
+        setValue(campo, novo as never, { shouldValidate: true });
+
+        continue;
+      }
+
+      const atualSerializado = JSON.stringify(atual);
+      const novoSerializado = JSON.stringify(novo);
+
+      if (atualSerializado !== novoSerializado) divergentes[campo] = novo;
+    }
+
+    setDivergencias(divergentes);
+  }
+
+  function aplicarDivergencia(campo: CampoMetadado) {
+    const valor = divergencias[campo];
+
+    if (valor === undefined) return;
+
+    setValue(campo, valor as never, { shouldValidate: true });
+
+    setDivergencias((atuais) => {
+      const restantes = { ...atuais };
+
+      delete restantes[campo];
+
+      return restantes;
+    });
+  }
+
+  function aoDigitarIsbn(e: ChangeEvent<HTMLInputElement>, campo: CampoIsbn) {
+    marcarEditado('isbn');
+
+    const mascarado = mascararIsbn(e.target.value);
+
+    campo.onChange(mascarado);
+  }
+
+  function aoSairIsbn(campo: CampoIsbn) {
+    campo.onBlur();
+
+    buscarIsbn();
+  }
+
+  function aoMudarAutores(autores: string[], campo: CampoAutores) {
+    marcarEditado('autores');
+
+    campo.onChange(autores);
+  }
+
   function aoEscolherCapa(arquivo: File | null) {
     setErroCapa(null);
 
-    setArquivoCapa(arquivo);
+    const escolha: EscolhaCapa = arquivo
+      ? { tipo: 'arquivo', arquivo }
+      : null;
+
+    setEscolhaCapa(escolha);
   }
 
   function aoDescartarCapa() {
-    if (arquivoCapa) {
-      setArquivoCapa(null);
+    if (escolhaCapa) {
+      setEscolhaCapa(null);
 
       return;
     }
@@ -316,11 +530,86 @@ export function LivroForm() {
   }
 
   function situacaoCapa() {
-    if (arquivoCapa) return `Arquivo ${arquivoCapa.name}: será enviado ao salvar.`;
+    if (escolhaCapa?.tipo === 'candidata') {
+      const fonte = nomeFonte(escolhaCapa.capa.origem);
+
+      return `Capa de ${fonte}: será baixada ao salvar.`;
+    }
+
+    if (escolhaCapa?.tipo === 'arquivo') {
+      return `Arquivo ${escolhaCapa.arquivo.name}: será enviado ao salvar.`;
+    }
 
     if (capaAtual) return 'Capa atual.';
 
     return 'Sem capa.';
+  }
+
+  function urlPreviaCapa() {
+    if (escolhaCapa?.tipo === 'candidata') return escolhaCapa.capa.url;
+
+    if (escolhaCapa?.tipo === 'arquivo') return undefined;
+
+    return capaAtual;
+  }
+
+  function rotuloComAplicar(rotulo: string, campo: CampoMetadado) {
+    const valor = divergencias[campo];
+
+    if (valor === undefined) return rotulo;
+
+    const texto = String(valor);
+    const resumo = texto.slice(0, 40);
+
+    return (
+      <>
+        {rotulo}
+
+        <button
+          type="button"
+          className={classes(
+            'btn',
+            'btn-link',
+            'btn-sm',
+            'p-0',
+            'ms-2',
+            'align-baseline',
+          )}
+          title={`Valor encontrado: ${texto}`}
+          onClick={() => aplicarDivergencia(campo)}
+        >
+          aplicar “{resumo}”
+        </button>
+      </>
+    );
+  }
+
+  function candidataCapa(capa: CapaCandidata) {
+    const ativa = escolhaCapa?.tipo === 'candidata'
+      && escolhaCapa.capa.url === capa.url;
+
+    const fonte = nomeFonte(capa.origem);
+
+    return (
+      <button
+        key={capa.url}
+        type="button"
+        className={classes(
+          'p-0',
+          'border',
+          'rounded',
+          'bg-transparent',
+          ativa && 'border-2',
+          ativa && 'border-primary',
+        )}
+        style={LARGURA_CANDIDATA}
+        aria-pressed={ativa}
+        aria-label={`Usar capa de ${fonte}`}
+        onClick={() => setEscolhaCapa({ tipo: 'candidata', capa })}
+      >
+        <Capa url={capa.url} titulo={fonte} />
+      </button>
+    );
   }
 
   function enviar(dados: Dados) {
@@ -349,51 +638,104 @@ export function LivroForm() {
                   rotulo="ISBN"
                   htmlFor="isbn"
                   erro={erros.isbn?.message}
-                  dica="ISBN-10 ou 13; opcional."
+                  dica="ISBN-10 ou 13; opcional. Ao sair do campo, buscamos os dados."
                 >
-                  <Controller
-                    control={control}
-                    name="isbn"
-                    render={({ field }) => (
-                      <input
-                        id="isbn"
-                        className={classes(
-                          'form-control',
-                          'font-monospace',
-                          erros.isbn && 'is-invalid',
-                        )}
-                        inputMode="numeric"
-                        placeholder="978-85-359-1484-9"
-                        value={field.value}
-                        onChange={(e) => field.onChange(mascararIsbn(e.target.value))}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="d-flex gap-2">
+                    <Controller
+                      control={control}
+                      name="isbn"
+                      render={({ field }) => (
+                        <input
+                          id="isbn"
+                          className={classes(
+                            'form-control',
+                            'font-monospace',
+                            erros.isbn && 'is-invalid',
+                          )}
+                          inputMode="numeric"
+                          placeholder="978-85-359-1484-9"
+                          value={field.value}
+                          onChange={(e) => aoDigitarIsbn(e, field)}
+                          onBlur={() => aoSairIsbn(field)}
+                        />
+                      )}
+                    />
+
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      disabled={!isbnValido(isbnDigitado) || buscaIsbn.isPending}
+                      onClick={() => buscarIsbn(true)}
+                    >
+                      {buscaIsbn.isPending ? (
+                        <span
+                          className="spinner-border spinner-border-sm me-1"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <i className="bi bi-search me-1" aria-hidden="true" />
+                      )}
+                      Buscar
+                    </button>
+                  </div>
                 </Campo>
 
-                <Campo rotulo="Título" htmlFor="titulo" erro={erros.titulo?.message}>
+                {outroLivroComIsbn && (
+                  <Alerta
+                    tom="danger"
+                    titulo="ISBN já cadastrado"
+                    icone="exclamation-triangle"
+                  >
+                    Este ISBN pertence a{' '}
+
+                    <Link
+                      to={{
+                        pathname: `/livros/${livroExistente.id}`,
+                        search: local.search,
+                      }}
+                    >
+                      {livroExistente.titulo}
+                    </Link>.
+                  </Alerta>
+                )}
+
+                {isbnAviso && (
+                  <Alerta titulo="Busca por ISBN">{isbnAviso}</Alerta>
+                )}
+
+                {isbnBusca && !livroExistente && (
+                  <p className="small text-body-secondary mb-0">
+                    <i className="bi bi-check2-circle me-1" aria-hidden="true" />
+                    Dados encontrados em {nomeFonte(isbnBusca.fonte)}. Revise antes de salvar.
+                  </p>
+                )}
+
+                <Campo
+                  rotulo={rotuloComAplicar('Título', 'titulo')}
+                  htmlFor="titulo"
+                  erro={erros.titulo?.message}
+                >
                   <input
                     id="titulo"
                     className={classes('form-control', erros.titulo && 'is-invalid')}
-                    {...register('titulo')}
+                    {...registrarMetadado('titulo')}
                   />
                 </Campo>
 
                 <Campo
-                  rotulo="Subtítulo"
+                  rotulo={rotuloComAplicar('Subtítulo', 'subtitulo')}
                   htmlFor="subtitulo"
                   erro={erros.subtitulo?.message}
                 >
                   <input
                     id="subtitulo"
                     className="form-control"
-                    {...register('subtitulo')}
+                    {...registrarMetadado('subtitulo')}
                   />
                 </Campo>
 
                 <Campo
-                  rotulo="Autores"
+                  rotulo={rotuloComAplicar('Autores', 'autores')}
                   htmlFor="autores"
                   erro={erros.autores?.message}
                   dica="Enter ou vírgula para adicionar."
@@ -405,7 +747,7 @@ export function LivroForm() {
                       <AutoresInput
                         id="autores"
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={(autores) => aoMudarAutores(autores, field)}
                       />
                     )}
                   />
@@ -413,38 +755,46 @@ export function LivroForm() {
 
                 <div className="row g-3">
                   <div className="col-sm-4">
-                    <Campo rotulo="Ano" htmlFor="ano" erro={erros.ano?.message}>
+                    <Campo
+                      rotulo={rotuloComAplicar('Ano', 'ano')}
+                      htmlFor="ano"
+                      erro={erros.ano?.message}
+                    >
                       <input
                         id="ano"
                         inputMode="numeric"
                         maxLength={4}
                         className={classes('form-control', erros.ano && 'is-invalid')}
-                        {...register('ano')}
+                        {...registrarMetadado('ano')}
                       />
                     </Campo>
                   </div>
 
                   <div className="col-sm-8">
                     <Campo
-                      rotulo="Editora"
+                      rotulo={rotuloComAplicar('Editora', 'editora')}
                       htmlFor="editora"
                       erro={erros.editora?.message}
                     >
                       <input
                         id="editora"
                         className="form-control"
-                        {...register('editora')}
+                        {...registrarMetadado('editora')}
                       />
                     </Campo>
                   </div>
                 </div>
 
-                <Campo rotulo="Sinopse" htmlFor="sinopse" erro={erros.sinopse?.message}>
+                <Campo
+                  rotulo={rotuloComAplicar('Sinopse', 'sinopse')}
+                  htmlFor="sinopse"
+                  erro={erros.sinopse?.message}
+                >
                   <textarea
                     id="sinopse"
                     rows={5}
                     className="form-control"
-                    {...register('sinopse')}
+                    {...registrarMetadado('sinopse')}
                   />
                 </Campo>
 
@@ -571,7 +921,7 @@ export function LivroForm() {
                 <h2 className="h6 mb-1">Capa</h2>
 
                 <p className="small text-body-secondary mb-0">
-                  Envie uma imagem do computador. A imagem é salva no servidor.
+                  Escolha uma capa encontrada ou envie do computador. A imagem é salva no servidor.
                 </p>
               </div>
 
@@ -579,17 +929,16 @@ export function LivroForm() {
                 <div className="d-flex gap-3 align-items-start">
                   <div style={LARGURA_CAPA}>
                     <Capa
+                      key={urlPreviaCapa() ?? 'sem-capa'}
                       titulo={tituloDigitado || 'livro'}
-                      url={arquivoCapa
-                        ? undefined
-                        : capaAtual}
+                      url={urlPreviaCapa()}
                     />
                   </div>
 
                   <div className="small text-body-secondary flex-grow-1">
                     {situacaoCapa()}
 
-                    {(arquivoCapa || capaAtual) && (
+                    {(escolhaCapa || capaAtual) && (
                       <div className="mt-2">
                         <button
                           type="button"
@@ -605,7 +954,7 @@ export function LivroForm() {
                           ) : (
                             <i className="bi bi-x-lg me-1" aria-hidden="true" />
                           )}
-                          {arquivoCapa
+                          {escolhaCapa
                             ? 'Descartar escolha'
                             : 'Remover capa'}
                         </button>
@@ -614,8 +963,20 @@ export function LivroForm() {
                   </div>
                 </div>
 
+                {capasEncontradas.length > 0 && (
+                  <div>
+                    <span className="form-label d-block">Capas encontradas</span>
+
+                    <div className="d-flex gap-2 flex-wrap">
+                      {capasEncontradas.map(candidataCapa)}
+                    </div>
+                  </div>
+                )}
+
                 <SeletorArquivo
-                  value={arquivoCapa}
+                  value={escolhaCapa?.tipo === 'arquivo'
+                    ? escolhaCapa.arquivo
+                    : null}
                   onChange={aoEscolherCapa}
                   maxBytes={TAMANHO_MAXIMO_CAPA}
                   aoErrar={setErroCapa}

@@ -21,5 +21,7 @@ return [
 
     'externas' => [
         'timeout' => 5,
+        'cache_isbn_dias' => 7,
+        'google_books_key' => env('GOOGLE_BOOKS_KEY'),
     ],
 ];

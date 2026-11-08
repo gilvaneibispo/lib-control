@@ -14,7 +14,11 @@ import { SeloStatus } from '../componentes/SeloStatus';
 import { useToast } from '../componentes/toastContexto';
 import { useRecarregarSessao, useSessao } from '../sessao';
 import { classes } from '../utilitarios/classes';
-import { formatarDiaSemana, listarAutores } from '../utilitarios/formatadores';
+import {
+  formatarDiaSemana,
+  formatarIsbn,
+  listarAutores,
+} from '../utilitarios/formatadores';
 
 const CODIGOS_GRAVES = ['LEITOR_BLOQUEADO', 'EMPRESTIMO_ATRASADO'];
 
@@ -58,7 +62,7 @@ function Ficha({ livro }: { livro: Livro }) {
       {livro.isbn && (
         <>
           <dt className="col-4 text-body-secondary fw-normal">ISBN</dt>
-          <dd className="col-8 m-0 font-monospace">{livro.isbn}</dd>
+          <dd className="col-8 m-0 font-monospace">{formatarIsbn(livro.isbn)}</dd>
         </>
       )}
 

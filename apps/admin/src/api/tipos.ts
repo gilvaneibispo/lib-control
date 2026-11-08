@@ -44,6 +44,24 @@ export interface SubareaResumo {
 
 export type OrigemCapa = 'brasilapi' | 'openlibrary' | 'google' | 'upload';
 
+export interface CapaCandidata {
+  origem: Exclude<OrigemCapa, 'upload'>;
+  url: string;
+}
+
+export interface ResultadoIsbn {
+  isbn: string;
+  titulo: string | null;
+  subtitulo: string | null;
+  autores: string[];
+  editora: string | null;
+  ano: number | null;
+  sinopse: string | null;
+  capas: CapaCandidata[];
+  fonte: string;
+  livro_existente: { id: number; titulo: string } | null;
+}
+
 export interface Livro {
   id: number;
   titulo: string;

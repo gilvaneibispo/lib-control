@@ -6,7 +6,7 @@ import { queryKeys } from '../api/queryKeys';
 import { admin } from '../api/servicos';
 import type { Livro } from '../api/tipos';
 import { classes } from '../utilitarios/classes';
-import { listarAutores } from '../utilitarios/formatadores';
+import { formatarIsbn, listarAutores } from '../utilitarios/formatadores';
 import { Capa } from './Capa';
 import { Carregando } from './Carregando';
 import { ErroCarregamento } from './ErroCarregamento';
@@ -46,7 +46,13 @@ function propriedades(livro: Livro): Propriedade[] {
   lista.push(
     {
       rotulo: 'ISBN',
-      valor: <span className="font-monospace">{livro.isbn ?? '—'}</span>,
+      valor: (
+        <span className="font-monospace">
+          {livro.isbn
+            ? formatarIsbn(livro.isbn)
+            : '—'}
+        </span>
+      ),
     },
     {
       rotulo: 'Editora',

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\CodigoErro;
 use App\Exceptions\RegrasException;
+use App\Models\Autor;
 use App\Models\Exemplar;
 use App\Models\Livro;
 use App\Helpers\LivroHelper;
@@ -22,6 +23,8 @@ final class LivroService
             $this->preencher($livro, $dados);
             $livro->save();
 
+            $this->sincronizarAutores($livro, $dados['autores'] ?? []);
+
             $this->adicionarExemplares($livro, (int) ($dados['quantidade_exemplares'] ?? 1));
 
             return $livro;
@@ -33,6 +36,10 @@ final class LivroService
         return DB::transaction(function () use ($livro, $dados) {
             $this->preencher($livro, $dados);
             $livro->save();
+
+            if (array_key_exists('autores', $dados)) {
+                $this->sincronizarAutores($livro, $dados['autores'] ?? []);
+            }
 
             return $livro;
         });
@@ -89,6 +96,30 @@ final class LivroService
 
         $livro->area_id = $dados['area_id'] ?? $livro->area_id;
         $livro->subarea_id = $dados['subarea_id'] ?? null;
+    }
+
+    private function sincronizarAutores(Livro $livro, array $nomes): void
+    {
+        $ids = [];
+        $ordem = 0;
+
+        foreach ($nomes as $nome) {
+            $nome = Autor::normalizarNome((string) $nome);
+
+            if ($nome === '') {
+                continue;
+            }
+
+            $existente = Autor::query()
+                ->whereRaw('lower(nome) = lower(?)', [$nome])
+                ->first();
+
+            $autor = $existente ?? Autor::create(['nome' => $nome]);
+
+            $ids[$autor->id] ??= ['ordem' => $ordem++];
+        }
+
+        $livro->autores()->sync($ids);
     }
 
     private function ultimaSequencia(Livro $livro): int

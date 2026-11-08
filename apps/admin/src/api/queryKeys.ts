@@ -2,6 +2,7 @@ export const queryKeys = {
   sessao: ['sessao'] as const,
   areas: ['areas'] as const,
   painel: ['painel'] as const,
+  autores: (termo: string) => ['autores', termo] as const,
   livros: {
     todos: ['livros'] as const,
     lista: (filtros: Record<string, unknown>) => ['livros', 'lista', filtros] as const,

@@ -16,6 +16,7 @@
         "axios": "^1.21.0",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.2",
+        "isbn3": "2.0.12",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "react-hook-form": "^7.91.0",

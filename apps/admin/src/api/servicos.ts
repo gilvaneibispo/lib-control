@@ -14,6 +14,7 @@ import type {
   Painel,
   Reserva,
   ResultadoDevolucao,
+  ResultadoIsbn,
   Sessao,
 } from './tipos';
 
@@ -125,6 +126,19 @@ export const admin = {
     const url = `/admin/livros/${id}/capa`;
 
     await excluir(url);
+  },
+
+  autores: async (termo: string) => {
+    const filtros = { q: termo };
+    const resposta = await obter<Envelope<string[]>>('/admin/autores', filtros);
+
+    return resposta.data;
+  },
+
+  isbn: async (isbn: string) => {
+    const resposta = await obter<Envelope<ResultadoIsbn>>(`/admin/isbn/${isbn}`);
+
+    return resposta.data;
   },
 
   exemplares: async (livroId: number) => {

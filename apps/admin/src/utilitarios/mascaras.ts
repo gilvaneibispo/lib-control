@@ -1,11 +1,11 @@
-import { somenteDigitos } from './validadores';
+import { formatarIsbn } from './formatadores';
+import { limparIsbn, somenteDigitos } from './validadores';
 
 export function mascararIsbn(valor: string): string {
-  const maiusculo = valor.toUpperCase();
-  const permitidos = maiusculo.replace(/[^0-9X-]/g, '');
-  const semHifensRepetidos = permitidos.replace(/-{2,}/g, '-');
+  const limpo = limparIsbn(valor);
+  const ateTrezeDigitos = limpo.slice(0, 13);
 
-  return semHifensRepetidos.slice(0, 17);
+  return formatarIsbn(ateTrezeDigitos);
 }
 
 export function mascararCpf(valor: string): string {

@@ -1,3 +1,5 @@
+import { parse } from 'isbn3';
+
 const TZ = 'America/Bahia';
 
 const dataCurta = new Intl.DateTimeFormat('pt-BR', {
@@ -59,4 +61,15 @@ export function listarAutores(autores: string[] | undefined): string {
   const nomes = primeiros.join(', ');
 
   return `${nomes} e outros`;
+}
+
+export function formatarIsbn(isbn: string | null | undefined): string {
+  const valor = isbn ?? '';
+  const analisado = parse(valor);
+
+  if (!analisado) return valor;
+
+  if (analisado.isIsbn10 && analisado.isbn10h) return analisado.isbn10h;
+
+  return analisado.isbn13h;
 }
