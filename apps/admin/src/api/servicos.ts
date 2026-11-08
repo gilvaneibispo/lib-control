@@ -9,6 +9,7 @@ import type {
   LeitorPayload,
   Livro,
   LivroPayload,
+  OrigemCapa,
   Paginado,
   Painel,
   Reserva,
@@ -100,6 +101,31 @@ export const admin = {
   },
 
   excluirLivro: (id: number) => excluir(`/admin/livros/${id}`),
+
+  capaPorUrl: async (id: number, url: string, origem: OrigemCapa) => {
+    const endereco = `/admin/livros/${id}/capa`;
+    const corpo = { url, origem };
+    const resposta = await enviar<Envelope<Livro>>(endereco, corpo);
+
+    return resposta.data;
+  },
+
+  capaPorArquivo: async (id: number, arquivo: File) => {
+    const url = `/admin/livros/${id}/capa`;
+    const form = new FormData();
+
+    form.append('capa', arquivo);
+
+    const resposta = await enviar<Envelope<Livro>>(url, form);
+
+    return resposta.data;
+  },
+
+  removerCapa: async (id: number) => {
+    const url = `/admin/livros/${id}/capa`;
+
+    await excluir(url);
+  },
 
   exemplares: async (livroId: number) => {
     const url = `/admin/livros/${livroId}/exemplares`;

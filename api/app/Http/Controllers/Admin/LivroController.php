@@ -8,10 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection as Anonimos;
 
 // Classes do projeto
+use App\Enums\OrigemCapa;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LivroResource;
+use App\Http\Requests\CapaRequest;
 use App\Http\Requests\LivroRequest;
 use App\Models\Livro;
+use App\Services\CapaService;
 use App\Services\LivroService;
 
 class LivroController extends Controller
@@ -68,5 +71,26 @@ class LivroController extends Controller
         $this->livros->excluir($livro);
 
         return response()->json(null, 204);
+    }
+
+    public function capa(CapaRequest $request, Livro $livro, CapaService $capas): LivroResource
+    {
+        if ($request->hasFile('capa')) {
+            $capas->salvarUpload($livro, $request->file('capa'));
+        } else {
+            $url = (string) $request->input('url');
+            $origem = OrigemCapa::from((string) $request->input('origem'));
+
+            $capas->baixar($livro, $url, $origem);
+        }
+
+        return new LivroResource($livro->load(['area', 'subarea']));
+    }
+
+    public function removerCapa(Livro $livro, CapaService $capas): LivroResource
+    {
+        $capas->remover($livro);
+
+        return new LivroResource($livro->load(['area', 'subarea']));
     }
 }

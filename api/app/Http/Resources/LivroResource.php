@@ -30,6 +30,7 @@ class LivroResource extends JsonResource
                 'nome' => $this->subarea->nome,
             ] : null),
             'capa_url' => $this->capaUrl(),
+            'capa_origem' => $this->capa_origem?->value,
             'autores' => $this->whenLoaded('autores', fn() => $this->autores->pluck('nome')->all()),
             'exemplares_total' => $this->whenHas('exemplares_total'),
             'exemplares_disponiveis' => $this->whenHas('exemplares_disponiveis'),

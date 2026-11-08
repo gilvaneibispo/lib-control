@@ -11,6 +11,8 @@ Route::get('/dashboard', DashboardController::class);
 
 // Livros
 Route::apiResource('livros', LivroController::class);
+Route::post('/livros/{livro}/capa', [LivroController::class, 'capa']);
+Route::delete('/livros/{livro}/capa', [LivroController::class, 'removerCapa']);
 
 // Exemplares
 Route::get('/livros/{livro}/exemplares', [ExemplarController::class, 'index']);

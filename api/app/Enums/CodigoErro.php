@@ -22,6 +22,8 @@ enum CodigoErro: string
     case CredenciaisInvalidas = 'CREDENCIAIS_INVALIDAS';
     case PapelIncompativel = 'PAPEL_INCOMPATIVEL';
 
+    case CapaInvalida = 'CAPA_INVALIDA';
+
     public function mensagem(): string
     {
         return match ($this) {
@@ -40,6 +42,7 @@ enum CodigoErro: string
             self::UsuarioNaoLeitor => 'O usuário informado não é um leitor.',
             self::CredenciaisInvalidas => 'E-mail ou senha incorretos.',
             self::PapelIncompativel => 'Este usuário não tem acesso a este aplicativo.',
+            self::CapaInvalida => 'Não foi possível obter a imagem da capa.',
         };
     }
 }

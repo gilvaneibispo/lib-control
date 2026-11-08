@@ -42,6 +42,8 @@ export interface SubareaResumo {
   nome: string;
 }
 
+export type OrigemCapa = 'brasilapi' | 'openlibrary' | 'google' | 'upload';
+
 export interface Livro {
   id: number;
   titulo: string;
@@ -55,6 +57,7 @@ export interface Livro {
   area?: AreaResumo | null;
   subarea?: SubareaResumo | null;
   capa_url: string | null;
+  capa_origem: OrigemCapa | null;
   autores?: string[];
   exemplares_total?: number;
   exemplares_disponiveis?: number;

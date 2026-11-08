@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrigemCapa;
 use App\Enums\StatusExemplar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,7 +33,8 @@ class Livro extends Model
     protected function casts(): array
     {
         return [
-            'ano' => 'integer'
+            'ano' => 'integer',
+            'capa_origem' => OrigemCapa::class,
         ];
     }
 
