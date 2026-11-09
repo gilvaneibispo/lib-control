@@ -1,6 +1,6 @@
 # LibControl
 
-O LibControl é um sistema de gestão de biblioteca com catálogo público, reservas e empréstimos de exemplares, cadastro de obras com busca automática por ISBN, classificação por CDD e/ou CDU, além de leitura da página de créditos por reconhecimento óptico de caracteres (_Optical Character Recognition_ - OCR). O projeto compõe a atividade final da disciplina **Plataforma de Desenvolvimento em Software Livre e Servidores Web**, da pós-graduação _Lato Sensu_ em **Desenvolvimento Web** oferecida pelo **Instituto Federal de Educação, Ciência e Tecnologia do Sul de Minas Gerais** (IFSULDEMINAS).
+O LibControl é um sistema de gestão de biblioteca com catálogo público, reservas e empréstimos de exemplares, cadastro de obras com busca automática por ISBN e classificação por CDD e/ou CDU. O projeto compõe a atividade final da disciplina **Plataforma de Desenvolvimento em Software Livre e Servidores Web**, da pós-graduação _Lato Sensu_ em **Desenvolvimento Web** oferecida pelo **Instituto Federal de Educação, Ciência e Tecnologia do Sul de Minas Gerais** (IFSULDEMINAS).
 
 ## Funcionalidades
 
@@ -13,7 +13,6 @@ O LibControl é um sistema de gestão de biblioteca com catálogo público, rese
 **Bibliotecária (admin do sistema)**
 - Cadastro de obras, buscando metadados e capa pelo ISBN, via APIs BrasilAPI, Open Library, Google Books.
 - Área e sub-área preenchidas automaticamente a partir da CDD e/ou CDU
-- Botão **Ler página de créditos** para extrai ISBN, CDD e/ou CDU em fotos da página de créditos.
 - Gestão de exemplares, retirada de reservas, empréstimo e devolução no balcão.
 
 **Sistema (não depende de usuários)**
@@ -39,7 +38,7 @@ O LibControl é um sistema de gestão de biblioteca com catálogo público, rese
 
 ```bash
 git clone <repo> lib-control && cd lib-control
-cp .env.example .env # ajuste senhas e OCR_TOKEN
+cp .env.example .env # ajuste as senhas
 docker compose up -d --build
 docker compose exec api php artisan migrate --seed
 docker compose exec api php artisan lib-control:criar-admin
