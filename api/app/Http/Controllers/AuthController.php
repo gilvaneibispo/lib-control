@@ -8,12 +8,47 @@ use Illuminate\Support\Facades\Auth;
 use App\Exceptions\ErroException;
 use App\Enums\CodigoErro;
 use App\Enums\Papel;
+use App\Rules\Cpf;
+use App\Services\UsuarioService;
 
 class AuthController extends Controller
 {
 
     private const PAPEL_PADRAO_USUARIO = 'leitor';
-    
+
+    public function registrar(Request $request, UsuarioService $usuarios)
+    {
+        $request->merge([
+            'cpf' => preg_replace('/\D/', '', $request->input('cpf')),
+            'cep' => preg_replace('/\D/', '', $request->input('cep')),
+            'email' => strtolower(trim($request->input('email'))),
+            'uf' => strtoupper($request->input('uf')),
+            'numero' => strtoupper(trim($request->input('numero'))),
+        ]);
+
+        $dados = $request->validate([
+            'nome' => 'required',
+            'email' => 'required|email|unique:usuarios,email',
+            'password' => 'required|confirmed|min:8',
+            'cpf' => ['required', 'digits:11', new Cpf(), 'unique:usuarios,cpf'],
+            'nascimento' => 'required|date|before:today',
+            'cep' => 'required|digits:8',
+            'uf' => 'required|size:2',
+            'cidade' => 'required',
+            'bairro' => 'required',
+            'rua' => 'required',
+            'numero' => 'required',
+            'complemento' => 'nullable',
+        ]);
+
+        $user = $usuarios->registrar($dados);
+
+        Auth::guard('web')->login($user);
+        $this->regenerar($request);
+
+        return response()->json(['data' => $user->formatar()], 201);
+    }
+
     public function login(Request $request)
     {        
         
@@ -29,7 +64,7 @@ class AuthController extends Controller
             'password' => $request->input('password'),
         ];
 
-        $this->validarLogin(
+        $user = $this->validarLogin(
             $credenciais,
             $request->input('acesso'),
             $request->boolean('lembrar')
@@ -62,6 +97,8 @@ class AuthController extends Controller
             Auth::guard('web')->logout();
             throw new ErroException(CodigoErro::PapelIncompativel);
         }
+
+        return $user;
     }
 
     /** Mata a sessão atual, se existir, quando invocada. **/
