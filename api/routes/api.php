@@ -16,6 +16,7 @@ Route::middleware(['auth:sanctum', 'papel:admin'])->prefix('admin')->group(funct
     Route::get('/usuarios', [UsuarioController::class, 'index']);
     Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show']);
     Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update']);
+    Route::post('/usuarios/{usuario}/tornar-admin', [UsuarioController::class, 'tornarAdmin']);
 });
 
 Route::get('/user', function (Request $request) {
@@ -23,3 +24,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/ping', fn () => ['status' => 'ok']);
+
+// Rota inexistente...
+Route::fallback(fn () => response()->json([
+    'codigo' => 'ROTA_NAO_ENCONTRADA',
+    'mensagem' => 'Rota não encontrada.',
+], 404));

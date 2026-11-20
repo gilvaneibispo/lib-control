@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
+use App\Enums\Papel;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Rules\Cpf;
@@ -34,7 +35,7 @@ class UsuarioController extends Controller
     /** Lista usuário específico **/
     public function show(Usuario $usuario)
     {
-        return response()->json(['data' => $usuario->formatar()]);
+        return $this->responder(['data' => $usuario->formatar()]);
     }
 
     public function update(Request $request, Usuario $usuario)
@@ -77,6 +78,16 @@ class UsuarioController extends Controller
 
         $usuario->update($dados);
 
-        return response()->json(['data' => $usuario->formatar()]);
+        return $this->responder(['data' => $usuario->formatar()]);
+    }
+
+    /** Promove o usuário a admin **/
+    public function tornarAdmin(Usuario $usuario)
+    {
+        if (!$usuario->isAdmin()) {
+            $usuario->forceFill(['papel' => Papel::Admin])->save();
+        }
+
+        return $this->responder(['data' => $usuario->formatar()]);
     }
 }

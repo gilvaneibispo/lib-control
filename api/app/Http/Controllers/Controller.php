@@ -38,4 +38,10 @@ abstract class Controller
 
         return response()->json(array_merge($resposta, $extra));
     }
+
+    /** Padroniza o retorno HTTP **/
+    protected function responder(array $dados, $codigo = 200)
+    {
+        return response()->json($dados, $codigo);
+    }
 }
