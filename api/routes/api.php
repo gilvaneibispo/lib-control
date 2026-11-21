@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\LivroController;
 use App\Http\Controllers\Admin\UsuarioController;
 
 Route::prefix('auth')->group(function () {
@@ -17,6 +18,9 @@ Route::middleware(['auth:sanctum', 'papel:admin'])->prefix('admin')->group(funct
     Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show']);
     Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update']);
     Route::post('/usuarios/{usuario}/tornar-admin', [UsuarioController::class, 'tornarAdmin']);
+
+    // Livros
+    Route::apiResource('livros', LivroController::class);
 });
 
 Route::get('/user', function (Request $request) {
